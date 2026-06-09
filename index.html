@@ -683,14 +683,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   .home-flow-steps{overflow-x:auto}
   .home-notice{height:300px}
 
-  /* 공지 테이블 — 공지일자·작성자 숨김, 나머지 유연하게 */
+  /* 공지 테이블 — 공지일자·작성자 숨김, 링크 버튼 줄바꿈 방지 */
   .notice-table{table-layout:auto}
   .notice-table th:nth-child(1),.notice-table td:nth-child(1){width:36px;min-width:36px;max-width:36px}
   .notice-table th:nth-child(2),.notice-table td:nth-child(2){width:60px;min-width:60px;max-width:60px}
   .notice-table th:nth-child(3),.notice-table td:nth-child(3){width:auto;max-width:none}
   .notice-table th:nth-child(4),.notice-table td:nth-child(4){display:none}
   .notice-table th:nth-child(5),.notice-table td:nth-child(5){display:none}
-  .notice-table th:nth-child(6),.notice-table td:nth-child(6){width:56px;min-width:56px;max-width:56px}
+  .notice-table th:nth-child(6),.notice-table td:nth-child(6){width:56px;min-width:56px;max-width:56px;text-align:center}
+  .notice-link{white-space:nowrap;padding:3px 6px;font-size:10px}
 
   /* FAQ */
   .order-wrap{padding:14px 12px}
@@ -701,18 +702,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   .lib-wrap{padding:14px 12px}
   .lib-hero{flex-direction:column;gap:12px;align-items:flex-start}
   .lib-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .flipbook-header{flex-wrap:wrap;gap:8px}
+  .flipbook-title{font-size:12px;flex-wrap:wrap}
+  .flipbook-actions{flex-shrink:0}
 
   /* 계약서류 */
   .contract-wrap{padding:14px 12px}
   .contract-hero{flex-direction:column;gap:12px;align-items:flex-start}
   .contract-grid{grid-template-columns:1fr}
 
-  /* 가격확약서 */
+  /* 가격확약서 — form 1열로, 잘림 방지 */
   .quote-topbar{padding:0 12px}
   .quote-topbar-left{display:none}
   .app-layout{grid-template-columns:1fr;padding:10px}
   .summary-panel{position:static!important;width:100%!important}
-  .form-grid{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
   .type-selector{flex-wrap:wrap;gap:6px}
   .tab-nav{padding:8px 10px 0;gap:2px}
   .item-row{grid-template-columns:20px 1fr auto auto;font-size:12px}
@@ -723,7 +727,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   .lib-grid{grid-template-columns:1fr}
   .home-hero{padding:18px 16px}
   .home-hero-title{font-size:16px}
-  .form-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
   .app-layout{padding:8px}
 }
 
