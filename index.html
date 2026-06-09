@@ -2,25 +2,593 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>Amaranth H 견적서 작성 도구</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amaranth H 영업 포털</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--primary:#1a3a5c;--primary-light:#2563a8;--accent:#e8390e;--bg:#f0f2f5;--bg-card:#ffffff;--border:#d1d9e6;--text:#1e293b;--text-muted:#64748b;--text-light:#94a3b8;--install-color:#1d4ed8;--cloud-color:#0891b2;--install-bg:#eff6ff;--cloud-bg:#ecfeff;--success:#059669;--warning:#d97706;--danger:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.1);--shadow-md:0 4px 6px -1px rgba(0,0,0,.1);--radius:8px;--radius-sm:4px}
+/* ── 리셋 & 기본 ── */
+:root{
+  --primary:#1a3a5c;--primary-light:#2563a8;--accent:#e8390e;
+  --bg:#f0f2f5;--bg-card:#ffffff;--border:#d1d9e6;
+  --text:#1e293b;--text-muted:#64748b;--text-light:#94a3b8;
+  --install-color:#1d4ed8;--cloud-color:#0891b2;
+  --install-bg:#eff6ff;--cloud-bg:#ecfeff;
+  --success:#059669;--warning:#d97706;--danger:#dc2626;
+  --teal:#0e6e56;--teal-bg:#e1f5ee;
+  --shadow:0 1px 3px rgba(0,0,0,.1);--shadow-md:0 4px 6px -1px rgba(0,0,0,.1);
+  --radius:8px;--radius-sm:4px;
+  --nav-h:52px;--subnav-h:44px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
-.topbar{background:var(--primary);color:#fff;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.topbar-left{display:flex;align-items:center;gap:16px}
-.topbar-logo{font-size:16px;font-weight:700;letter-spacing:-.3px}
-.topbar-logo span{color:#60a5fa}
-.topbar-subtitle{font-size:11px;color:#93c5fd;font-weight:400}
-.topbar-right{display:flex;align-items:center;gap:8px}
+
+/* ── 상단 GNB ── */
+.gnb{background:var(--primary);color:#fff;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.gnb-left{display:flex;align-items:center;gap:20px}
+.gnb-logo{font-size:16px;font-weight:700;letter-spacing:-.3px;cursor:pointer}
+.gnb-logo span{color:#60a5fa}
+.gnb-nav{display:flex;gap:4px}
+.gnb-btn{padding:6px 14px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-size:12px;font-family:inherit;font-weight:500;color:rgba(255,255,255,.75);background:transparent;transition:all .15s}
+.gnb-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.gnb-btn.active{background:rgba(255,255,255,.2);color:#fff;font-weight:600}
+.gnb-right{font-size:11px;color:#93c5fd}
+
+/* ── 페이지 전환 ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── 공통 버튼 ── */
 .btn{padding:6px 14px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-size:12px;font-family:inherit;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
 .btn-ghost{background:rgba(255,255,255,.1);color:#fff}
 .btn-ghost:hover{background:rgba(255,255,255,.2)}
 .btn-success{background:var(--success);color:#fff}
 .btn-success:hover{background:#047857}
+.btn-primary{background:var(--primary-light);color:#fff}
+.btn-primary:hover{background:var(--primary)}
 .btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
 .btn-outline:hover{background:var(--bg)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:#085041}
+
+/* ── 카드 ── */
+.card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow)}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:6px}
+.card-body{padding:16px}
+
+/* ── 태그 ── */
+.tag{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500}
+.tag-blue{background:#dbeafe;color:#1d4ed8}
+.tag-teal{background:#ccfbf1;color:#0f766e}
+.tag-amber{background:#fef3c7;color:#92400e}
+.tag-red{background:#fee2e2;color:#991b1b}
+.tag-gray{background:#f1f5f9;color:#475569}
+.tag-green{background:#dcfce7;color:#166534}
+
+/* ── 메시지 박스 ── */
+.msg{display:flex;align-items:flex-start;gap:6px;padding:7px 10px;border-radius:var(--radius-sm);font-size:11px;margin:6px 0}
+.msg.info{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.msg.warn{background:#fffbeb;color:var(--warning);border:1px solid #fde68a}
+.msg.success{background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0}
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     GNB
+══════════════════════════════ -->
+<nav class="gnb">
+  <div class="gnb-left">
+    <div class="gnb-logo" onclick="showPage('home')">Amaranth <span>H</span> <span style="font-size:11px;font-weight:400;color:#93c5fd;margin-left:4px">영업 포털</span></div>
+    <div class="gnb-nav">
+      <button class="gnb-btn" id="nav-quote" onclick="showPage('quote')">📋 가격확약서 작성</button>
+      <button class="gnb-btn" id="nav-contract" onclick="showPage('contract')">📝 계약서류</button>
+      <button class="gnb-btn" id="nav-library" onclick="showPage('library')">📚 영업자료</button>
+      <button class="gnb-btn" id="nav-order" onclick="showPage('order')">❓ FAQ</button>
+    </div>
+  </div>
+  <div class="gnb-right">2026.05.11 표준가격표 기준</div>
+</nav>
+
+<!-- ══════════════════════════════
+     홈 페이지
+══════════════════════════════ -->
+<div id="page-home" class="page active">
+<style>
+.home-wrap{max-width:960px;margin:0 auto;padding:25px 20px}
+.home-hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);border-radius:12px;padding:40px 48px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden}
+.home-hero::after{content:'Amaranth H';position:absolute;right:30px;top:70%;transform:translateY(-50%);font-size:40px;font-weight:600;color:rgba(255,255,255,.07);line-height:1;pointer-events:none}
+.home-hero-title{font-size:26px;font-weight:700;margin-bottom:8px}
+.home-hero-sub{font-size:14px;color:#93c5fd;margin-bottom:24px}
+.home-hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.home-hero-btn{padding:10px 20px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-size:13px;font-family:inherit;font-weight:600;transition:all .15s}
+.home-hero-btn.primary{background:#fff;color:var(--primary)}
+.home-hero-btn.primary:hover{background:#f0f9ff}
+.home-hero-btn.ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.home-hero-btn.ghost:hover{background:rgba(255,255,255,.25)}
+.home-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.home-menu-card{background:var(--bg-card);border-radius:10px;border:1px solid var(--border);padding:24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.home-menu-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--primary-light)}
+.home-menu-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.home-menu-card.c1::before{background:var(--primary-light)}
+.home-menu-card.c2::before{background:var(--teal)}
+.home-menu-card.c3::before{background:#d97706}
+.home-menu-card.c4::before{background:#7c3aed}
+.home-menu-icon{font-size:28px;margin-bottom:12px}
+.home-menu-title{font-size:15px;font-weight:600;color:var(--primary);margin-bottom:6px}
+.home-menu-desc{font-size:12px;color:var(--text-muted);line-height:1.6}
+.home-menu-badge{display:inline-block;margin-top:10px;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--install-bg);color:var(--install-color);font-weight:500}
+.home-notice{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);display:flex;flex-direction:column;height:360px}
+.home-notice-head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding:16px 24px 0;margin-bottom:0}
+.home-notice-title{font-size:12px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:6px}
+.home-notice-viewall{background:none;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 10px;font-size:11px;color:var(--text-muted);cursor:pointer;font-family:inherit;transition:all .15s;text-decoration:none}
+.home-notice-viewall:hover{background:var(--bg);color:var(--primary)}
+.home-notice-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
+.home-notice-row:last-child{border-bottom:none}
+.home-notice-dot{width:6px;height:6px;border-radius:50%;background:var(--primary-light);margin-top:5px;flex-shrink:0}
+/* 공지사항 테이블 */
+.notice-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.notice-table th{padding:7px 10px;text-align:left;font-weight:600;color:var(--text-muted);white-space:nowrap;background:#f8fafc;position:sticky;top:0;z-index:10;box-shadow:inset 0 1px 0 #d1d9e6, inset 0 -1px 0 #d1d9e6;}
+.notice-table td{padding:7px 10px;border-bottom:1px solid #f1f5f9;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.notice-table th:nth-child(1),.notice-table td:nth-child(1){width:50px;min-width:50px;max-width:50px}
+.notice-table th:nth-child(2),.notice-table td:nth-child(2){width:80px;min-width:80px;max-width:80px}
+.notice-table th:nth-child(3),.notice-table td:nth-child(3){width:300px;min-width:0;max-width:700px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;word-break:normal}
+.notice-table th:nth-child(4),.notice-table td:nth-child(4){width:90px;min-width:90px;max-width:90px}
+.notice-table th:nth-child(5),.notice-table td:nth-child(5){width:90px;min-width:90px;max-width:90px}
+.notice-table th:nth-child(6),.notice-table td:nth-child(6){width:90px;min-width:90px;max-width:90px}
+.notice-table tbody tr:hover td{background:#f8fafc}
+.notice-table tbody tr:last-child td{border-bottom:none}
+.notice-cat{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+.notice-cat.update{background:#dbeafe;color:#1d4ed8}
+.notice-cat.new{background:#dcfce7;color:#166534}
+.notice-cat.notice{background:#fef3c7;color:#92400e}
+.notice-cat.event{background:#f3e8ff;color:#7c3aed}
+.notice-cat.urgent{background:#fee2e2;color:#991b1b}
+.notice-cat.info{background:#e0f2fe;color:#0369a1}
+.notice-cat.check{background:#fff7ed;color:#c2410c}
+.notice-cat.default{background:#f1f5f9;color:#475569}
+.notice-link{display:inline-block;padding:2px 8px;border-radius:var(--radius-sm);background:var(--install-bg);color:var(--install-color);font-size:11px;font-weight:500;text-decoration:none;transition:background .15s}
+.notice-link:hover{background:#dbeafe}
+.home-flow{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);padding:20px;margin-bottom:28px}
+.home-flow-title{font-size:12px;font-weight:600;color:var(--primary);margin-bottom:14px}
+.home-flow-steps{display:flex;align-items:center;gap:0;overflow-x:auto}
+.home-flow-step{flex:1;min-width:100px;text-align:center}
+.home-flow-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-size:18px;border:2px solid}
+.home-flow-dot.s1{background:#eff6ff;border-color:#93c5fd}
+.home-flow-dot.s2{background:#eff6ff;border-color:#93c5fd}
+.home-flow-dot.s3{background:#eff6ff;border-color:#93c5fd}
+.home-flow-dot.s4{background:#fef3c7;border-color:#fcd34d}
+.home-flow-dot.s5{background:#f0fdf4;border-color:#86efac}
+.home-flow-dot.s6{background:#f0fdf4;border-color:#86efac}
+.home-flow-label{font-size:11px;font-weight:500;color:var(--text)}
+.home-flow-sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+.home-flow-arr{font-size:18px;color:var(--border);flex-shrink:0;padding:0 2px;margin-bottom:22px}
+</style>
+<div class="home-wrap">
+  <div class="home-hero">
+    <div class="home-hero-title">Amaranth H 영업 포털</div>
+    <div class="home-hero-sub">가격확약서 작성 · 계약서류 · 영업자료 · FAQ — 한 곳에서</div>
+
+  </div>
+
+  <div class="home-grid">
+    <div class="home-menu-card c1" onclick="showPage('quote')">
+      <div class="home-menu-icon">📋</div>
+      <div class="home-menu-title">가격확약서(견적서) 작성</div>
+      <div class="home-menu-desc">병원 규모 선택부터 모듈·유저수 입력까지 자동 계산. HTML·PDF 출력 지원</div>
+      <span class="home-menu-badge">기존 초안 통합</span>
+    </div>
+    <div class="home-menu-card c3" onclick="showPage('contract')">
+      <div class="home-menu-icon">📝</div>
+      <div class="home-menu-title">계약서류</div>
+      <div class="home-menu-desc">계약 체결에 필요한 각종 서류 양식 및 작성 가이드 제공</div>
+      <span class="home-menu-badge" style="background:#fef3c7;color:#92400e">신규</span>
+    </div>
+    <div class="home-menu-card c4" onclick="showPage('library')">
+      <div class="home-menu-icon">📚</div>
+      <div class="home-menu-title">영업자료</div>
+      <div class="home-menu-desc">소개서·매뉴얼·FAQ + FlipHTML5 책장 인터랙티브 뷰어 통합 제공</div>
+      <span class="home-menu-badge" style="background:#f3e8ff;color:#7c3aed">신규</span>
+    </div>
+    <div class="home-menu-card c2" onclick="showPage('order')">
+      <div class="home-menu-icon">❓</div>
+      <div class="home-menu-title">FAQ</div>
+      <div class="home-menu-desc">발주·견적·계약 관련 자주 묻는 질문을 검색하고 빠르게 확인</div>
+      <span class="home-menu-badge" style="background:var(--teal-bg);color:var(--teal)">신규</span>
+    </div>
+  </div>
+
+  <div class="home-notice">
+    <div class="home-notice-head">
+      <div class="home-notice-title">
+        📢 공지사항
+        <span id="notice-status" style="font-size:10px;font-weight:400;color:var(--text-light)"></span>
+      </div>
+      <a href="https://gwa.douzone.com/ecm/oneffice/one003A06?c2VxPTdjYzEyQjRHY0ZHOUdlNDc0RzY3MkJGR0cxNjM2R0Y1&sso=Y" target="_blank" class="home-notice-viewall">공지 상세 ›</a>
+    </div>
+    <div style="flex:1;overflow-y:auto;margin-top:10px;padding:0 24px 16px">
+      <table class="notice-table">
+        <thead>
+          <tr>
+            <th style="text-align:center">NO</th>
+            <th>구분</th>
+            <th>제목</th>
+            <th style="white-space:nowrap">공지일자</th>
+            <th style="white-space:nowrap">작성자</th>
+            <th style="text-align:center;white-space:nowrap">링크</th>
+          </tr>
+        </thead>
+        <tbody id="notice-list">
+          <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">불러오는 중...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ══════════════════════════════
+     FAQ 페이지
+══════════════════════════════ -->
+<div id="page-order" class="page">
+<style>
+.order-wrap{max-width:960px;margin:0 auto;padding:24px 20px}
+
+/* 히어로 */
+.order-hero{background:linear-gradient(135deg,var(--teal) 0%,#0e9f75 100%);border-radius:12px;padding:32px 40px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden}
+.order-hero::after{content:'FAQ';position:absolute;right:36px;top:50%;transform:translateY(-50%);font-size:100px;font-weight:700;color:rgba(255,255,255,.07);line-height:1;pointer-events:none;letter-spacing:-4px}
+.order-hero h2{font-size:20px;font-weight:700;margin-bottom:6px}
+.order-hero p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.6}
+.order-hero-cta{margin-top:18px}
+.order-cta{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:8px 18px;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-family:inherit;font-weight:600;transition:all .15s}
+.order-cta:hover{background:rgba(255,255,255,.3)}
+
+/* 검색 영역 */
+.faq-search-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;box-shadow:var(--shadow)}
+.faq-search-row{display:flex;gap:8px;margin-bottom:14px}
+.faq-search-input-wrap{flex:1;position:relative}
+.faq-search-input-wrap .ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none}
+.faq-search-input{width:100%;padding:9px 12px 9px 36px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;background:#fff}
+.faq-search-input:focus{border-color:var(--teal)}
+.faq-reload-btn{padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);font-size:12px;cursor:pointer;font-family:inherit;color:var(--text-muted);white-space:nowrap;transition:all .15s}
+.faq-reload-btn:hover{background:#e2e8f0;color:var(--text)}
+.faq-cats{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.faq-cats-label{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.faq-cat-btn{padding:4px 12px;border-radius:99px;font-size:11px;cursor:pointer;font-family:inherit;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);transition:all .15s;font-weight:500}
+.faq-cat-btn:hover{border-color:var(--teal);color:var(--teal)}
+.faq-cat-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* FAQ 아이템 */
+.faq-list-wrap{display:flex;flex-direction:column;gap:8px}
+.faq-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s}
+.faq-item:hover{box-shadow:var(--shadow-md)}
+.faq-q{padding:14px 18px;cursor:pointer;font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--bg-card);transition:background .15s;line-height:1.5}
+.faq-q:hover{background:#f8fafc}
+.faq-q.open{background:var(--teal-bg);color:var(--teal)}
+.faq-q-left{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0}
+.faq-q-arrow{font-size:12px;flex-shrink:0;transition:transform .2s;color:var(--text-muted)}
+.faq-q.open .faq-q-arrow{transform:rotate(180deg);color:var(--teal)}
+.faq-a{display:none;padding:14px 18px 16px;font-size:12px;color:var(--text);background:#f9fbfa;border-top:1px solid var(--border);line-height:1.75;white-space:pre-wrap}
+.faq-a.show{display:block}
+.faq-cat-badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap;flex-shrink:0;margin-top:1px}
+
+/* 상태 영역 */
+.faq-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;min-height:20px}
+.faq-count{font-size:11px;color:var(--text-muted)}
+
+/* 연락처 */
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.contact-card{background:#f8fafc;border-radius:var(--radius-sm);padding:14px;text-align:center;border:1px solid var(--border)}
+.contact-name{font-size:12px;font-weight:600;color:var(--primary);margin-bottom:3px}
+.contact-role{font-size:11px;color:var(--text-muted);margin-bottom:6px}
+.contact-tel{font-size:12px;color:var(--install-color);font-weight:500}
+</style>
+
+<div class="order-wrap">
+
+  <!-- 히어로 -->
+  <div class="order-hero">
+    <h2>❓ FAQ</h2>
+    <p>궁금한 점을 검색하거나 카테고리를 선택해 빠르게 확인하세요</p>
+    <div class="order-hero-cta">
+      <button class="order-cta" onclick="window.open('#','_blank')">🚀 내부 발주 시스템 바로가기</button>
+    </div>
+  </div>
+
+  <!-- 검색 + 카테고리 -->
+  <div class="faq-search-wrap">
+    <div class="faq-search-row">
+      <div class="faq-search-input-wrap">
+        <span class="ico">🔍</span>
+        <input class="faq-search-input" type="text" id="faq-search" placeholder="질문이나 키워드를 입력하세요…" oninput="filterFaq()">
+      </div>
+      <button class="faq-reload-btn" onclick="faqReload()">🔄 새로고침</button>
+    </div>
+    <div class="faq-cats">
+      <span class="faq-cats-label">카테고리</span>
+      <div id="faq-cat-filters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <!-- FAQ 목록 -->
+  <div class="faq-meta">
+    <span id="faq-count" class="faq-count"></span>
+    <span id="faq-status" style="font-size:11px;color:var(--text-muted)"></span>
+  </div>
+  <div class="faq-list-wrap" id="faq-list">
+    <div style="text-align:center;padding:40px;color:var(--text-muted);font-size:12px">불러오는 중…</div>
+  </div>
+
+  <!-- 담당 연락처 -->
+  <div class="card" style="margin-top:28px">
+    <div class="card-header"><div class="card-title">📞 담당 부서 연락처</div></div>
+    <div class="card-body">
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-name">본사 영업팀</div>
+          <div class="contact-role">견적·발주 일반 문의</div>
+          <div class="contact-tel">내선 1234</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-name">채널 영업팀</div>
+          <div class="contact-role">대리점 발주·할인 승인</div>
+          <div class="contact-tel">내선 1235</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-name">기술지원팀</div>
+          <div class="contact-role">별도협의·구축 범위 확인</div>
+          <div class="contact-tel">내선 1236</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     영업 자료실 페이지
+══════════════════════════════ -->
+<div id="page-library" class="page">
+<style>
+.lib-wrap{max-width:1100px;margin:0 auto;padding:24px 20px}
+.lib-hero{background:linear-gradient(135deg,#854f0b 0%,#d97706 100%);color:#fff;border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.lib-hero h2{font-size:16px;font-weight:600;margin-bottom:4px}
+.lib-hero p{font-size:12px;color:rgba(255,255,255,.8)}
+.lib-section-title{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.lib-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FlipHTML5 임베드 영역 */
+.flipbook-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px}
+.flipbook-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.flipbook-title{font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:6px}
+.flipbook-actions{display:flex;gap:8px;align-items:center}
+.flipbook-container{position:relative;width:100%;background:#f8fafc}
+.flipbook-iframe{width:100%;height:600px;border:none;display:block}
+.flipbook-fallback{display:none;padding:40px;text-align:center}
+.flipbook-fallback p{font-size:13px;color:var(--text-muted);margin-bottom:16px}
+
+/* 카테고리 카드 */
+.lib-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.lib-cat-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;transition:all .2s}
+.lib-cat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.lib-cat-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.lib-cat-icon{font-size:22px;margin-bottom:6px}
+.lib-cat-name{font-size:13px;font-weight:600;color:var(--primary)}
+.lib-cat-body{padding:10px 0}
+.lib-item{display:flex;align-items:center;gap:8px;padding:7px 16px;cursor:pointer;transition:background .1s;font-size:12px;color:var(--text);text-decoration:none;display:flex}
+.lib-item:hover{background:#f8fafc;color:var(--primary-light)}
+.lib-item-icon{font-size:14px;flex-shrink:0}
+.lib-item-name{flex:1;line-height:1.4}
+.lib-item-tag{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--install-bg);color:var(--install-color);flex-shrink:0}
+.lib-item-tag.new{background:#fef3c7;color:#92400e}
+.lib-item-tag.pdf{background:#fee2e2;color:#991b1b}
+</style>
+
+<div class="lib-wrap">
+  <div class="lib-hero">
+    <div>
+      <h2>📚 영업 자료실</h2>
+      <p>소개서·매뉴얼·FAQ 카테고리 자료 + Amaranth 10 영업/구축 자료 책장</p>
+    </div>
+    <a href="https://fliphtml5.com/bookcase/rzslv/" target="_blank" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:8px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;text-decoration:none;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,.3)'" onmouseout="this.style.background='rgba(255,255,255,.2)'">🔗 책장 새 탭으로 열기</a>
+  </div>
+
+  <!-- FlipHTML5 책장 임베드 -->
+  <div class="lib-section-title">📖 Amaranth 10 영업/구축 자료 책장</div>
+  <div class="flipbook-wrap">
+    <div class="flipbook-header">
+      <div class="flipbook-title">
+        📚 Amaranth 10 영업/구축 자료
+        <span class="tag tag-amber">FlipHTML5</span>
+        <span class="tag tag-gray">더존비즈온</span>
+      </div>
+      <div class="flipbook-actions">
+        <button class="btn btn-outline" style="font-size:11px" onclick="reloadFlip()">🔄 새로고침</button>
+        <a href="https://fliphtml5.com/bookcase/rzslv/" target="_blank" class="btn btn-outline" style="font-size:11px;text-decoration:none">↗ 새 탭</a>
+      </div>
+    </div>
+    <div class="flipbook-container">
+      <iframe
+        id="flipbook-iframe"
+        class="flipbook-iframe"
+        src="https://fliphtml5.com/bookcase/rzslv/"
+        allowfullscreen
+        allow="fullscreen"
+        onload="flipLoaded()"
+        onerror="flipError()">
+      </iframe>
+      <div class="flipbook-fallback" id="flipbook-fallback">
+        <div style="font-size:40px;margin-bottom:12px">📚</div>
+        <p>책장을 불러오지 못했습니다.<br>FlipHTML5 임베드 정책에 따라 직접 접속이 필요할 수 있습니다.</p>
+        <a href="https://fliphtml5.com/bookcase/rzslv/" target="_blank" class="btn btn-primary">↗ FlipHTML5에서 직접 열기</a>
+      </div>
+    </div>
+    <div style="padding:8px 16px;background:#f8fafc;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)">
+      ※ 임베드가 정상 표시되지 않는 경우 FlipHTML5 계정 관리자에게 공식 임베드 코드를 요청하거나 '새 탭' 버튼으로 이용하세요.
+    </div>
+  </div>
+
+  <!-- 카테고리 자료 -->
+  <div class="lib-section-title">📂 카테고리별 자료</div>
+  <div class="lib-grid">
+    <!-- 제품 소개서 -->
+    <div class="lib-cat-card">
+      <div class="lib-cat-header">
+        <div class="lib-cat-icon">🏥</div>
+        <div class="lib-cat-name">제품 소개서</div>
+      </div>
+      <div class="lib-cat-body">
+        <a href="#" class="lib-item"><span class="lib-item-icon">📄</span><span class="lib-item-name">Amaranth H 통합 소개서</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">📄</span><span class="lib-item-name">EMR 기능 소개서</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">📄</span><span class="lib-item-name">ERP 기능 소개서</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">🤖</span><span class="lib-item-name">ONE AI 소개서</span><span class="lib-item-tag new">NEW</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">📊</span><span class="lib-item-name">병원 규모별 제안서 템플릿</span><span class="lib-item-tag">PPT</span></a>
+      </div>
+    </div>
+    <!-- 매뉴얼 -->
+    <div class="lib-cat-card">
+      <div class="lib-cat-header">
+        <div class="lib-cat-icon">📘</div>
+        <div class="lib-cat-name">매뉴얼</div>
+      </div>
+      <div class="lib-cat-body">
+        <a href="#" class="lib-item"><span class="lib-item-icon">📗</span><span class="lib-item-name">영업 참조용 기능 매뉴얼</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">📙</span><span class="lib-item-name">EMR 사용자 매뉴얼</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">📙</span><span class="lib-item-name">ERP 사용자 매뉴얼</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">🔧</span><span class="lib-item-name">구축 가이드 (기술팀용)</span><span class="lib-item-tag">DOC</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">☁️</span><span class="lib-item-name">클라우드 도입 가이드</span><span class="lib-item-tag new">NEW</span></a>
+      </div>
+    </div>
+    <!-- 영업 참고 자료 -->
+    <div class="lib-cat-card">
+      <div class="lib-cat-header">
+        <div class="lib-cat-icon">📈</div>
+        <div class="lib-cat-name">영업 참고 자료</div>
+      </div>
+      <div class="lib-cat-body">
+        <a href="#" class="lib-item"><span class="lib-item-icon">⚔️</span><span class="lib-item-name">경쟁사 비교표</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">✨</span><span class="lib-item-name">차별화 포인트 정리</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">🏆</span><span class="lib-item-name">도입 사례 레퍼런스</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">💰</span><span class="lib-item-name">ROI 계산 사례</span><span class="lib-item-tag">XLS</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">📰</span><span class="lib-item-name">제품 보도자료 모음</span><span class="lib-item-tag">링크</span></a>
+      </div>
+    </div>
+    <!-- 현장 FAQ -->
+    <div class="lib-cat-card">
+      <div class="lib-cat-header">
+        <div class="lib-cat-icon">💬</div>
+        <div class="lib-cat-name">현장 FAQ</div>
+      </div>
+      <div class="lib-cat-body">
+        <a href="#" class="lib-item"><span class="lib-item-icon">❓</span><span class="lib-item-name">고객 자주묻는 질문 대응 가이드</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">💲</span><span class="lib-item-name">가격·옵션 설명 포인트</span><span class="lib-item-tag pdf">PDF</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">🔒</span><span class="lib-item-name">EMR 인증제 관련 Q&A</span><span class="lib-item-tag">DOC</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">🏥</span><span class="lib-item-name">병원 규모별 추천 구성</span><span class="lib-item-tag new">NEW</span></a>
+        <a href="#" class="lib-item"><span class="lib-item-icon">🤖</span><span class="lib-item-name">ONE AI 도입 Q&A</span><span class="lib-item-tag new">NEW</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     계약서류 페이지
+══════════════════════════════ -->
+<div id="page-contract" class="page">
+<style>
+.contract-wrap{max-width:900px;margin:0 auto;padding:24px 20px}
+.contract-hero{background:linear-gradient(135deg,#1e3a5f 0%,#2d6a4f 100%);color:#fff;border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.contract-hero h2{font-size:16px;font-weight:600;margin-bottom:4px}
+.contract-hero p{font-size:12px;color:rgba(255,255,255,.8)}
+.contract-section-title{font-size:13px;font-weight:600;color:var(--primary);margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.contract-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.contract-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
+.contract-doc-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;cursor:pointer;transition:all .2s}
+.contract-doc-card:hover{box-shadow:var(--shadow-md);border-color:var(--primary-light)}
+.contract-doc-icon{font-size:24px;margin-bottom:8px}
+.contract-doc-title{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:4px}
+.contract-doc-desc{font-size:11px;color:var(--text-muted);line-height:1.6}
+.contract-doc-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+</style>
+<div class="contract-wrap">
+  <div class="contract-hero">
+    <div>
+      <h2>📝 계약서류</h2>
+      <p>계약 체결에 필요한 각종 서류 양식 및 작성 가이드를 제공합니다</p>
+    </div>
+  </div>
+
+  <div class="contract-section-title">📄 계약 서류 양식</div>
+  <div class="contract-grid">
+    <div class="contract-doc-card">
+      <div class="contract-doc-icon">📑</div>
+      <div class="contract-doc-title">소프트웨어 공급 계약서</div>
+      <div class="contract-doc-desc">설치형 도입 시 사용하는 표준 소프트웨어 공급 계약서 양식</div>
+      <div class="contract-doc-badges"><span class="tag tag-blue">설치형</span><span class="tag tag-gray">DOC</span></div>
+    </div>
+    <div class="contract-doc-card">
+      <div class="contract-doc-icon">📑</div>
+      <div class="contract-doc-title">서비스 이용 계약서 (SaaS)</div>
+      <div class="contract-doc-desc">클라우드형(SaaS) 도입 시 사용하는 서비스 이용 계약서 양식</div>
+      <div class="contract-doc-badges"><span class="tag tag-teal">클라우드</span><span class="tag tag-gray">DOC</span></div>
+    </div>
+    <div class="contract-doc-card">
+      <div class="contract-doc-icon">📋</div>
+      <div class="contract-doc-title">가격확약서 (견적서)</div>
+      <div class="contract-doc-desc">고객사 제출용 공식 가격확약서. 포털 견적 작성 탭에서 생성 가능</div>
+      <div class="contract-doc-badges"><span class="tag tag-amber">필수</span></div>
+    </div>
+    <div class="contract-doc-card">
+      <div class="contract-doc-icon">📜</div>
+      <div class="contract-doc-title">유지보수 계약서</div>
+      <div class="contract-doc-desc">도입 후 연간 유지보수 서비스 제공을 위한 계약서 양식</div>
+      <div class="contract-doc-badges"><span class="tag tag-gray">DOC</span></div>
+    </div>
+    <div class="contract-doc-card">
+      <div class="contract-doc-icon">🔏</div>
+      <div class="contract-doc-title">비밀유지협약서 (NDA)</div>
+      <div class="contract-doc-desc">제안 및 협의 과정에서 교환되는 정보 보호를 위한 NDA 양식</div>
+      <div class="contract-doc-badges"><span class="tag tag-gray">DOC</span></div>
+    </div>
+    <div class="contract-doc-card">
+      <div class="contract-doc-icon">✅</div>
+      <div class="contract-doc-title">납품 확인서</div>
+      <div class="contract-doc-desc">소프트웨어 납품 완료 후 고객사 서명을 받는 납품 확인서 양식</div>
+      <div class="contract-doc-badges"><span class="tag tag-green">납품</span><span class="tag tag-gray">DOC</span></div>
+    </div>
+  </div>
+
+  <div class="contract-section-title">📌 계약 체결 안내</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="msg info">ℹ️ 서류 양식 파일은 현재 연동 준비 중입니다. 필요한 양식은 본사 영업팀(내선 1234)에 문의하세요.</div>
+      <div style="margin-top:12px;font-size:12px;color:var(--text-muted);line-height:1.8">
+        <div style="font-weight:600;color:var(--text);margin-bottom:6px">계약 체결 순서</div>
+        <div>① 가격확약서(견적서) 확정 → ② 고객사 내부 결재 완료 → ③ 계약서 날인 → ④ 발주서 수령 → ⑤ FAQ 탭에서 발주 절차 확인</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     견적서 생성 페이지 래퍼
+══════════════════════════════ -->
+<div id="page-quote" class="page">
+<style>
+/* 기존 견적서 스타일 완전 보존 + 할인 패널 추가 */
+.topbar{display:none!important} /* GNB로 대체 */
+.quote-topbar{background:var(--primary);color:#fff;padding:0 24px;height:40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1)}
+.quote-topbar-left{font-size:11px;color:#93c5fd}
+.quote-topbar-right{display:flex;align-items:center;gap:8px}
 .app-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;padding:16px;max-width:1600px;margin:0 auto;align-items:start}
 .main-col{min-width:0;display:flex;flex-direction:column;gap:12px}
 .card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow)}
@@ -63,7 +631,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .warning-msg{display:flex;align-items:flex-start;gap:6px;padding:7px 10px;border-radius:var(--radius-sm);font-size:11px;margin:6px 0}
 .warning-msg.info{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
 .warning-msg.warn{background:#fffbeb;color:var(--warning);border:1px solid #fde68a}
-.summary-panel{position:sticky;top:68px}
+.summary-panel{position:sticky;top:calc(var(--nav-h) + 16px)}
 .summary-type-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
 .badge-install{background:var(--install-bg);color:var(--install-color)}
 .badge-cloud{background:var(--cloud-bg);color:var(--cloud-color)}
@@ -90,43 +658,51 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .radio-option-name{flex:1;font-size:12px;font-weight:500}
 .radio-option-price{font-size:12px;font-weight:600;color:var(--primary)}
 .radio-option-price.negotiate{color:var(--text-muted);font-weight:400;font-style:italic}
-.tag{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500}
-.tag-blue{background:#dbeafe;color:#1d4ed8}
-.tag-teal{background:#ccfbf1;color:#0f766e}
-.tag-amber{background:#fef3c7;color:#92400e}
-.tag-red{background:#fee2e2;color:#991b1b}
-.tag-gray{background:#f1f5f9;color:#475569}
 .mt-8{margin-top:8px}
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
-@media print{.topbar,.tab-nav,.type-selector,.summary-panel,.btn{display:none!important}.app-layout{grid-template-columns:1fr}.tab-content{display:block!important}body{background:#fff}}
+/* 할인 패널 */
+.discount-panel{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-sm);padding:12px;margin-top:8px}
+.discount-panel-title{font-size:11px;font-weight:600;color:#92400e;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.discount-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.discount-row label{font-size:11px;color:var(--text-muted);min-width:80px}
+.discount-input{width:80px;padding:4px 8px;border:1px solid #fde68a;border-radius:var(--radius-sm);font-size:12px;font-family:inherit;text-align:right;background:#fff}
+.discount-result{font-size:12px;font-weight:600;color:#92400e;margin-left:auto}
+.discount-note{font-size:10px;color:var(--text-muted);margin-top:4px}
+/* 프리셋 */
+
+@media print{
+  .gnb,.quote-topbar,.tab-nav,.type-selector,.summary-panel,.btn{display:none!important}
+  .app-layout{grid-template-columns:1fr}
+  .tab-content{display:block!important}
+  body{background:#fff}
+}
 </style>
-</head>
-<body>
-<div class="topbar">
-  <div class="topbar-left">
-    <div>
-      <div class="topbar-logo">Amaranth <span>H</span></div>
-      <div class="topbar-subtitle">견적서 작성 도구 v1.0 &nbsp;·&nbsp; 2026.05.11 표준가격표 기준</div>
-    </div>
-  </div>
-  <div class="topbar-right">
-    <button class="btn btn-ghost" onclick="resetAll()">🔄 초기화</button>
-    <button class="btn btn-ghost" onclick="loadSaved()">📂 불러오기</button>
-    <button class="btn btn-ghost" onclick="saveData()">💾 저장</button>
-    <button class="btn btn-ghost" onclick="window.print()">🖨️ 인쇄</button>
-    <button class="btn btn-success" onclick="exportHTML()">📄 HTML 내보내기</button>
+
+<!-- 견적서 서브 툴바 -->
+<div class="quote-topbar">
+  <span class="quote-topbar-left">가격확약서(견적서) 작성 도구 v1.0 &nbsp;·&nbsp; 2026.05.11 표준가격표 기준</span>
+  <div class="quote-topbar-right">
+    <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="resetAll()">🔄 초기화</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="document.getElementById('json-file-input').click()">📁 파일 열기</button>
+    <input type="file" id="json-file-input" accept=".json" style="display:none" onchange="loadFromJsonFile(this)">
+    <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="saveData()">💾 저장(JSON)</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="window.print()">🖨️ 인쇄</button>
+    <button class="btn btn-success" style="font-size:11px;padding:4px 10px" onclick="exportHTML()">📄 HTML 내보내기</button>
+    <button class="btn btn-primary" style="font-size:11px;padding:4px 10px" onclick="exportPDF()">📑 PDF 저장</button>
+    <button class="btn btn-teal" style="font-size:11px;padding:4px 10px" onclick="shareLink()">🔗 링크 공유</button>
   </div>
 </div>
-
+<!-- 공유 링크 배너 -->
+<div id="share-banner" style="display:none;align-items:center;gap:10px;padding:8px 20px;background:#f0fdf4;border-bottom:1px solid #86efac;font-size:12px;color:#166534;">
+  <span>🔗 공유된 견적 데이터를 불러왔습니다.</span>
+  <button onclick="document.getElementById('share-banner').style.display='none'" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:18px;color:#166534;line-height:1">✕</button>
+</div>
 <div class="app-layout">
 <div class="main-col">
 
 <!-- 헤더 카드 -->
 <div class="card">
   <div class="card-header">
-    <div class="card-title">📋 견적 기본 정보</div>
+    <div class="card-title">📋 가격확약서 기본 정보</div>
     <span id="currentTypeBadge" class="summary-type-badge badge-install">● 설치형 400병상↓</span>
   </div>
   <div class="type-selector">
@@ -140,10 +716,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div class="form-group"><label>담당자명</label><input type="text" id="hdr_contact" placeholder="고객사 담당자"></div>
       <div class="form-group"><label>견적번호</label><input type="text" id="hdr_quoteno"></div>
       <div class="form-group"><label>견적일자</label><input type="date" id="hdr_date"></div>
-      <div class="form-group"><label>공급사명</label><input type="text" id="hdr_supplier" placeholder="영림원소프트랩"></div>
-      <div class="form-group"><label>영업센터</label><input type="text" id="hdr_center"></div>
-      <div class="form-group"><label>영업담당자</label><input type="text" id="hdr_sales"></div>
-      <div class="form-group"><label>견적담당자</label><input type="text" id="hdr_quoter"></div>
+      <div class="form-group"><label>공급사명</label><input type="text" id="hdr_supplier" placeholder="(주)더존비즈온"></div>
+      <div class="form-group"><label>영업센터</label><input type="text" id="hdr_center" placeholder="영업센터"></div>
+      <div class="form-group"><label>영업담당자</label><input type="text" id="hdr_sales" placeholder="영업담당자"></div>
+      <div class="form-group"><label>견적담당자</label><input type="text" id="hdr_quoter" placeholder="견적담당자"></div>
     </div>
   </div>
 </div>
@@ -452,6 +1028,25 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
           <span id="sum_total">0원</span>
         </div>
       </div>
+      
+      <!-- 할인 패널 -->
+      <div class="discount-panel">
+        <div class="discount-panel-title">🏷️ 할인 적용 <span class="tag tag-red" style="font-size:10px">ONE AI 제외</span></div>
+        <div class="discount-row">
+          <label>할인율 (%)</label>
+          <input type="number" class="discount-input" id="disc_rate" min="0" max="100" value="0" oninput="applyDiscount()" placeholder="0">
+          <span style="font-size:11px;color:var(--text-muted)">%</span>
+        </div>
+        <div class="discount-row">
+          <label>할인금액 (원)</label>
+          <input type="number" class="discount-input" id="disc_amt" min="0" value="0" oninput="applyDiscountAmt()" placeholder="0" style="width:110px">
+        </div>
+        <div class="discount-row" style="margin-bottom:0">
+          <label>할인 후 합계</label>
+          <span class="discount-result" id="disc_total">—</span>
+        </div>
+        <div class="discount-note">※ 할인 적용 후 금액은 참고용이며, 발주 시 별도 승인 필요</div>
+      </div>
       <div id="cloud-monthly-panel" class="cloud-monthly" style="display:none">
         <div class="cloud-monthly-label">☁️ 클라우드 월정액 현황</div>
         <div class="cloud-monthly-row" style="margin-top:6px">
@@ -486,7 +1081,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 </div>
 
 </div><!-- /app-layout -->
-
 <script>
 // ==============================
 // STATE
@@ -1041,18 +1635,88 @@ function autoSave(){try{localStorage.setItem('amaranth_h_q',JSON.stringify(gathe
 function gatherState(){
   var hdr={};
   ['hdr_customer','hdr_contact','hdr_quoteno','hdr_date','hdr_supplier','hdr_center','hdr_sales','hdr_quoter'].forEach(function(f){var e=gid(f);if(e)hdr[f]=e.value;});
-  return {type:state.type,oneai:state.oneai,services:state.services,header:hdr};
+  var checks={};
+  document.querySelectorAll('input[type=checkbox][id^=chk_]').forEach(function(e){checks[e.id]=e.checked;});
+  var qtys={};
+  document.querySelectorAll('input[type=number][id^=qty_]').forEach(function(e){qtys[e.id]=e.value;});
+  var disc={
+    rate: parseFloat((gid('disc_rate')||{}).value)||0,
+    amt:  parseInt((gid('disc_amt')||{}).value)||0
+  };
+  return {type:state.type,oneai:state.oneai,services:state.services,header:hdr,checks:checks,qtys:qtys,disc:disc};
 }
-function saveData(){try{localStorage.setItem('amaranth_h_q',JSON.stringify(gatherState()));alert('저장되었습니다.');}catch(e){alert('저장 실패');}}
-function loadSaved(){
+function saveData(){
   try{
-    var d=localStorage.getItem('amaranth_h_q');
-    if(!d){alert('저장된 데이터가 없습니다.');return;}
-    var s=JSON.parse(d);
-    if(s.header)Object.keys(s.header).forEach(function(k){var e=gid(k);if(e)e.value=s.header[k];});
-    if(s.type)setType(s.type);
-    alert('불러왔습니다.');updateSummary();
-  }catch(e){alert('불러오기 실패');}
+    var s=gatherState();
+    localStorage.setItem('amaranth_h_q',JSON.stringify(s));
+    var cust=(gid('hdr_customer')||{}).value||'견적';
+    var date=(gid('hdr_date')||{}).value||new Date().toISOString().split('T')[0];
+    var blob=new Blob([JSON.stringify(s,null,2)],{type:'application/json;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='견적_'+cust+'_'+date+'.json';
+    a.click();
+    showToast('💾 저장됐습니다: 견적_'+cust+'_'+date+'.json');
+  }catch(e){alert('저장 실패: '+e.message);}
+}
+
+function loadFromJsonFile(input){
+  var file=input.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      restoreState(JSON.parse(e.target.result));
+      showToast('📁 파일을 불러왔습니다: '+file.name);
+    }catch(err){alert('파일 형식이 올바르지 않습니다.');}
+  };
+  reader.readAsText(file,'UTF-8');
+  input.value='';
+}
+function restoreState(s){
+  // 1단계: 도입유형 설정 (렌더링 트리거)
+  if(s.type) setType(s.type);
+  // 2단계: 렌더링 완료 후 나머지 복원
+  setTimeout(function(){
+    // 헤더
+    if(s.header) Object.keys(s.header).forEach(function(k){var e=gid(k);if(e)e.value=s.header[k];});
+    // 체크박스
+    if(s.checks) Object.keys(s.checks).forEach(function(k){var e=gid(k);if(e)e.checked=s.checks[k];});
+    // 수량
+    if(s.qtys) Object.keys(s.qtys).forEach(function(k){var e=gid(k);if(e)e.value=s.qtys[k];});
+    // ONE AI
+    if(s.oneai&&s.oneai.selected){
+      state.oneai=s.oneai;
+      ONEAI_PLANS.forEach(function(p,i){
+        if(p.label===s.oneai.label){
+          var el=gid('oneai_opt_'+i);
+          if(el){el.classList.add('selected');var rb=el.querySelector('input');if(rb)rb.checked=true;}
+        }
+      });
+      setTxt('oneai_selected_label',s.oneai.label+' — '+fmt(s.oneai.amount));
+    }
+    // 서비스
+    if(s.services){
+      state.services=s.services;
+      if(s.services.fax){
+        var el=gid('fax_opt_'+s.services.fax.id);
+        if(el){el.classList.add('selected');var rb=el.querySelector('input');if(rb)rb.checked=true;}
+      }
+      if(s.services.labor){
+        var el=gid('labor_opt_'+s.services.labor.id);
+        if(el){el.classList.add('selected');var rb=el.querySelector('input');if(rb)rb.checked=true;}
+      }
+    }
+    // 할인
+    if(s.disc){
+      if(gid('disc_rate')) gid('disc_rate').value=s.disc.rate||0;
+      if(gid('disc_amt'))  gid('disc_amt').value=s.disc.amt||0;
+    }
+    // 유저 계산 재실행
+    if(typeof calcErpUser==='function'){calcErpUser();calcEmrUser();calcEmpUser();}
+    if(typeof calcErpCloud==='function'){calcErpCloud();calcEmrCloud();calcEmpCloud();}
+    updateSummary();
+  }, 100);
 }
 function resetAll(){if(!confirm('모든 입력을 초기화하시겠습니까?'))return;location.reload();}
 
@@ -1060,52 +1724,160 @@ function resetAll(){if(!confirm('모든 입력을 초기화하시겠습니까?')
 // EXPORT
 // ==============================
 function exportHTML(){
-  var cust=gid('hdr_customer').value||'견적서';
-  var date=gid('hdr_date').value||new Date().toISOString().split('T')[0];
-  var html='<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>견적서 - '+cust+'</title>'
-    +'<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">'
-    +'<style>body{font-family:\'Noto Sans KR\',sans-serif;max-width:820px;margin:40px auto;padding:20px;color:#1e293b}'
-    +'h1{font-size:22px;font-weight:700;border-bottom:2px solid #1a3a5c;padding-bottom:10px;margin-bottom:20px;color:#1a3a5c}'
-    +'.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;margin-bottom:20px}'
-    +'.mr{display:flex;gap:8px}.ml{color:#64748b;min-width:80px}.mv{font-weight:500}'
-    +'.tb{display:inline-block;padding:4px 12px;border-radius:12px;background:#eff6ff;color:#1d4ed8;font-weight:600;font-size:12px;margin-bottom:16px}'
-    +'table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px}'
-    +'th{background:#1a3a5c;color:#fff;padding:8px 12px;text-align:left}'
-    +'td{padding:8px 12px;border-bottom:1px solid #e2e8f0}'
-    +'.tr{background:#f0f2f5;font-weight:700}.gt{background:#1a3a5c;color:#fff}'
-    +'</style></head><body>'
-    +'<h1>Amaranth H 견적서</h1>'
-    +'<div class="meta">'
-    +'<div class="mr"><span class="ml">고객사명</span><span class="mv">'+gid('hdr_customer').value+'</span></div>'
-    +'<div class="mr"><span class="ml">견적일자</span><span class="mv">'+date+'</span></div>'
-    +'<div class="mr"><span class="ml">견적번호</span><span class="mv">'+gid('hdr_quoteno').value+'</span></div>'
-    +'<div class="mr"><span class="ml">영업담당자</span><span class="mv">'+gid('hdr_sales').value+'</span></div>'
-    +'<div class="mr"><span class="ml">공급사명</span><span class="mv">'+gid('hdr_supplier').value+'</span></div>'
-    +'<div class="mr"><span class="ml">영업센터</span><span class="mv">'+gid('hdr_center').value+'</span></div>'
-    +'</div>'
-    +'<div class="tb">도입 유형: '+getLabel()+'</div>'
-    +'<h3 style="font-size:14px;margin:12px 0 8px">선택 항목</h3>'
-    +'<div style="font-size:12px;color:#475569;margin-bottom:16px">'+gid('selected-items-list').innerHTML+'</div>'
-    +'<table><tr><th>구분</th><th style="text-align:right">금액</th></tr>'
-    +'<tr><td>① 유저 사용료</td><td style="text-align:right">'+gid('sum_user').textContent+'</td></tr>'
-    +'<tr><td>② ONE AI</td><td style="text-align:right">'+gid('sum_oneai').textContent+'</td></tr>'
-    +'<tr><td>③ 모듈 라이선스</td><td style="text-align:right">'+gid('sum_module').textContent+'</td></tr>'
-    +'<tr><td>④ ERP 옵션</td><td style="text-align:right">'+gid('sum_option').textContent+'</td></tr>'
-    +'<tr><td>⑤ 서비스</td><td style="text-align:right">'+gid('sum_service').textContent+'</td></tr>'
-    +'<tr><td>⑥ 장비연동</td><td style="text-align:right">'+gid('sum_equipment').textContent+'</td></tr>'
-    +'<tr><td>⑦ 마이그레이션</td><td style="text-align:right">'+gid('sum_migration').textContent+'</td></tr>'
-    +'<tr><td>⑧ 교육/구축비</td><td style="text-align:right">'+gid('sum_edu').textContent+'</td></tr>'
-    +'<tr class="tr"><td>공급가액 (VAT 별도)</td><td style="text-align:right">'+gid('sum_supply').textContent+'</td></tr>'
-    +'<tr class="tr"><td>VAT (10%)</td><td style="text-align:right">'+gid('sum_vat').textContent+'</td></tr>'
-    +'<tr class="gt"><td>합계 (VAT 포함)</td><td style="text-align:right">'+gid('sum_total').textContent+'</td></tr>'
-    +'</table>'
-    +'<p style="font-size:11px;color:#94a3b8">※ 모든 금액은 VAT 별도입니다. · Amaranth H 표준가격표 기준 (2026.05.11)</p>'
-    +'</body></html>';
-  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='견적서_'+cust+'_'+date+'.html';
+  var cust = gid('hdr_customer').value || '견적서';
+  var date = gid('hdr_date').value || new Date().toISOString().split('T')[0];
+
+  // 별도협의 항목 수집
+  var negotiateItems = [];
+  var nn = gid('negotiate-note');
+  if(nn && nn.style.display !== 'none' && nn.textContent){
+    var raw = nn.textContent.replace('* 별도협의 항목','').replace(/\d+건:/,'').trim();
+    negotiateItems = raw.split(',').map(function(s){return s.trim();}).filter(Boolean);
+  }
+
+  // 선택 항목 상세 텍스트
+  var selectedHTML = gid('selected-items-list') ? gid('selected-items-list').innerHTML : '';
+
+  // 할인 계산
+  var supply = parseInt((gid('sum_supply').textContent||'0').replace(/[^0-9]/g,''))||0;
+  var oneai  = parseInt((gid('sum_oneai').textContent||'0').replace(/[^0-9]/g,''))||0;
+  var discRate = parseFloat((gid('disc_rate')||{}).value)||0;
+  var discAmt  = parseInt((gid('disc_amt')||{}).value)||0;
+  var discountable = supply - oneai;
+  var discValue = discRate > 0 ? Math.round(discountable * discRate / 100) : discAmt;
+  var discSupply = supply - discValue;
+  var discVat    = Math.round(discSupply * 0.1);
+  var discTotal  = discSupply + discVat;
+  var hasDiscount = discValue > 0;
+
+  // 별도협의 테이블 HTML
+  var negotiateSection = '';
+  if(negotiateItems.length > 0){
+    negotiateSection = '<h3 style="font-size:14px;margin:20px 0 8px;color:#1a3a5c;">📋 별도협의 항목</h3>'
+      + '<table><tr><th>#</th><th>항목명</th><th style="text-align:right">비고</th></tr>'
+      + negotiateItems.map(function(item, i){
+          return '<tr><td style="text-align:center;color:#64748b">'+(i+1)+'</td>'
+               + '<td>'+item+'</td>'
+               + '<td style="text-align:right;color:#d97706;font-style:italic">별도협의</td></tr>';
+        }).join('')
+      + '<tr><td colspan="3" style="font-size:11px;color:#64748b;font-style:italic">'
+      + '※ 위 항목은 별도협의가 필요합니다. 담당자에게 문의하여 주시기 바랍니다.</td></tr>'
+      + '</table>';
+  }
+
+  // 할인 내역 행
+  var discountRows = '';
+  if(hasDiscount){
+    discountRows = '<tr class="tr"><td>공급가액 (VAT 별도, 할인 전)</td><td style="text-align:right">'+gid('sum_supply').textContent+'</td></tr>'
+      + '<tr style="background:#fffbeb"><td style="color:#92400e">　할인 '+(discRate>0?'('+discRate+'%)':'(고정금액)')+'　(ONE AI 제외)</td><td style="text-align:right;color:#d97706">- '+discValue.toLocaleString('ko-KR')+'원</td></tr>'
+      + '<tr class="tr"><td style="font-weight:700">공급가액 (VAT 별도, 할인 후)</td><td style="text-align:right;font-weight:700">'+discSupply.toLocaleString('ko-KR')+'원</td></tr>'
+      + '<tr class="tr"><td>VAT (10%)</td><td style="text-align:right">'+discVat.toLocaleString('ko-KR')+'원</td></tr>'
+      + '<tr class="gt"><td>최종 합계 (VAT 포함, 할인 후)</td><td style="text-align:right">'+discTotal.toLocaleString('ko-KR')+'원</td></tr>';
+  } else {
+    discountRows = '<tr class="tr"><td>공급가액 (VAT 별도)</td><td style="text-align:right">'+gid('sum_supply').textContent+'</td></tr>'
+      + '<tr class="tr"><td>VAT (10%)</td><td style="text-align:right">'+gid('sum_vat').textContent+'</td></tr>'
+      + '<tr class="gt"><td>합계 (VAT 포함)</td><td style="text-align:right">'+gid('sum_total').textContent+'</td></tr>';
+  }
+
+  var html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'
+    + '<title>가격확약서 - '+cust+'</title>'
+    + '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">'
+    + '<style>'
+    + 'body{font-family:\'Noto Sans KR\',sans-serif;max-width:860px;margin:40px auto;padding:24px 28px;color:#1e293b;font-size:13px}'
+    + '@media print{body{margin:0;padding:16px}.no-print{display:none}}'
+    + '.cover-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #1a3a5c}'
+    + '.cover-title{font-size:26px;font-weight:700;color:#1a3a5c;letter-spacing:-.5px}'
+    + '.cover-sub{font-size:12px;color:#64748b;margin-top:4px}'
+    + '.cover-logo{font-size:20px;font-weight:700;color:#1a3a5c}'
+    + '.cover-logo span{color:#2563a8}'
+    + '.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:20px;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden}'
+    + '.meta-row{display:flex;border-bottom:1px solid #e2e8f0}'
+    + '.meta-row:last-child{border-bottom:none}'
+    + '.meta-label{background:#f8fafc;color:#64748b;font-weight:600;padding:7px 14px;min-width:90px;font-size:12px;border-right:1px solid #e2e8f0}'
+    + '.meta-value{padding:7px 14px;font-size:12px;font-weight:500}'
+    + '.type-badge{display:inline-block;padding:4px 14px;border-radius:20px;background:#eff6ff;color:#1d4ed8;font-weight:700;font-size:12px;margin-bottom:18px}'
+    + 'h3{font-size:13px;font-weight:700;color:#1a3a5c;margin:20px 0 8px;padding-left:8px;border-left:3px solid #2563a8}'
+    + '.items-list{font-size:12px;color:#475569;margin-bottom:4px;padding:8px 12px;background:#f8fafc;border-radius:4px;line-height:1.8}'
+    + 'table{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:13px}'
+    + 'th{background:#1a3a5c;color:#fff;padding:8px 14px;text-align:left;font-weight:500}'
+    + 'td{padding:8px 14px;border-bottom:1px solid #e2e8f0}'
+    + 'tr:last-child td{border-bottom:none}'
+    + '.tr{background:#f0f2f5;font-weight:600}'
+    + '.gt{background:#1a3a5c;color:#fff;font-weight:700;font-size:14px}'
+    + '.note-box{margin-top:20px;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden}'
+    + '.note-box-title{background:#f8fafc;padding:7px 14px;font-size:12px;font-weight:600;color:#475569;border-bottom:1px solid #e2e8f0}'
+    + '.note-box-body{padding:12px 14px;min-height:60px;font-size:12px;color:#94a3b8}'
+    + '.footer-note{margin-top:24px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8;line-height:1.8}'
+    + '.print-btn{position:fixed;bottom:24px;right:24px;background:#1a3a5c;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-family:inherit;box-shadow:0 4px 12px rgba(0,0,0,.2)}'
+    + '</style></head><body>'
+
+    // 커버 헤더
+    + '<div class="cover-header">'
+    + '<div><div class="cover-title">가격확약서</div><div class="cover-sub">PRICE CONFIRMATION</div></div>'
+    + '<div class="cover-logo">Amaranth <span>H</span></div>'
+    + '</div>'
+
+    // 기본 정보 메타 그리드
+    + '<div class="meta-grid">'
+    + '<div class="meta-row"><span class="meta-label">고객사명</span><span class="meta-value">'+gid('hdr_customer').value+'</span></div>'
+    + '<div class="meta-row"><span class="meta-label">견적일자</span><span class="meta-value">'+date+'</span></div>'
+    + '<div class="meta-row"><span class="meta-label">담당자명</span><span class="meta-value">'+gid('hdr_contact').value+'</span></div>'
+    + '<div class="meta-row"><span class="meta-label">견적번호</span><span class="meta-value">'+gid('hdr_quoteno').value+'</span></div>'
+    + '<div class="meta-row"><span class="meta-label">공급사명</span><span class="meta-value">'+gid('hdr_supplier').value+'</span></div>'
+    + '<div class="meta-row"><span class="meta-label">영업담당자</span><span class="meta-value">'+gid('hdr_sales').value+'</span></div>'
+    + '<div class="meta-row"><span class="meta-label">영업센터</span><span class="meta-value">'+gid('hdr_center').value+'</span></div>'
+    + '<div class="meta-row"><span class="meta-label">견적담당자</span><span class="meta-value">'+gid('hdr_quoter').value+'</span></div>'
+    + '</div>'
+
+    // 도입유형 배지
+    + '<div class="type-badge">도입 유형: '+getLabel()+'</div>'
+
+    // 선택 항목 상세
+    + '<h3>선택 항목 구성</h3>'
+    + '<div class="items-list">'+selectedHTML+'</div>'
+
+    // 금액 요약 테이블
+    + '<h3>금액 내역</h3>'
+    + '<table>'
+    + '<tr><th>구분</th><th style="text-align:right">금액</th></tr>'
+    + '<tr><td>① 유저 사용료</td><td style="text-align:right">'+gid('sum_user').textContent+'</td></tr>'
+    + '<tr><td>② ONE AI <span style="font-size:11px;color:#d97706">(할인불가)</span></td><td style="text-align:right">'+gid('sum_oneai').textContent+'</td></tr>'
+    + '<tr><td>③ 모듈 라이선스</td><td style="text-align:right">'+gid('sum_module').textContent+'</td></tr>'
+    + '<tr><td>④ ERP 옵션</td><td style="text-align:right">'+gid('sum_option').textContent+'</td></tr>'
+    + '<tr><td>⑤ 서비스</td><td style="text-align:right">'+gid('sum_service').textContent+'</td></tr>'
+    + '<tr><td>⑥ 장비연동</td><td style="text-align:right">'+gid('sum_equipment').textContent+'</td></tr>'
+    + '<tr><td>⑦ 마이그레이션</td><td style="text-align:right">'+gid('sum_migration').textContent+'</td></tr>'
+    + '<tr><td>⑧ 교육/구축비</td><td style="text-align:right">'+gid('sum_edu').textContent+'</td></tr>'
+    + discountRows
+    + '</table>'
+
+    // 별도협의 항목 테이블
+    + negotiateSection
+
+    // 특이사항란
+    + '<div class="note-box">'
+    + '<div class="note-box-title">📝 특이사항 / 협의 내용</div>'
+    + '<div class="note-box-body">(해당 없음)</div>'
+    + '</div>'
+
+    // 하단 주석
+    + '<div class="footer-note">'
+    + '※ 본 견적서의 유효기간은 발행일로부터 30일입니다.<br>'
+    + '※ 모든 금액은 부가가치세(VAT) 별도입니다.<br>'
+    + '※ 별도협의 항목은 담당자 확인 후 최종 금액이 결정됩니다.<br>'
+    + '※ Amaranth H 표준가격표 기준 (2026.05.11) &nbsp;|&nbsp; 영림원소프트랩'
+    + '</div>'
+
+    // 인쇄 버튼 (인쇄 시 숨김)
+    + '<button class="print-btn no-print" onclick="window.print()">🖨️ 인쇄하기</button>'
+    + '</body></html>';
+
+  var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '가격확약서_'+cust+'_'+date+'.html';
   a.click();
+  showToast('📄 가격확약서를 저장했습니다: 가격확약서_'+cust+'_'+date+'.html');
 }
 
 // ==============================
@@ -1123,7 +1895,511 @@ function exportHTML(){
   renderEduPrices();
   renderEquipment();
   updateSummary();
+  // URL 공유 데이터 자동 복원
+  (function(){
+    var params = new URLSearchParams(location.search);
+    var q = params.get('q');
+    if(!q) return;
+    try{
+      var s = JSON.parse(decodeURIComponent(escape(atob(q))));
+      restoreState(s);
+      setTimeout(function(){
+        var banner = document.getElementById('share-banner');
+        if(banner) banner.style.display = 'flex';
+      }, 200);
+    }catch(e){ console.warn('URL 복원 실패', e); }
+  })();
 })();
 </script>
+
+<script>
+// ══════════════════════════════
+// URL 공유 / 토스트
+// ══════════════════════════════
+function shareLink(){
+  var s = gatherState();
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(s))));
+  var url = location.href.split('?')[0] + '?q=' + encoded;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){
+      showToast('🔗 공유 링크가 복사됐습니다! 카톡·이메일로 붙여넣기하세요.');
+    }).catch(function(){ _fallbackCopy(url); });
+  } else { _fallbackCopy(url); }
+}
+function _fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); showToast('🔗 공유 링크가 복사됐습니다!'); }
+  catch(e){ prompt('아래 링크를 복사하세요:', text); }
+  document.body.removeChild(ta);
+}
+function showToast(msg){
+  var t = document.getElementById('portal-toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'portal-toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);'
+      + 'background:#1e293b;color:#fff;padding:10px 22px;border-radius:8px;font-size:13px;'
+      + 'z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:opacity .3s;white-space:nowrap;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(function(){ t.style.opacity = '0'; }, 3000);
+}
+
+// ══════════════════════════════
+// 공지사항 — Google Sheets 연동
+// ══════════════════════════════
+var NOTICE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQXaiGr-grYrHrxlgvDVgPSUMbyvKFemlQb6hje_nYZYrXUJ9D7gbg35DVR_RV3sTFlnSMueeetRUc7/pub?gid=0&single=true&output=tsv';
+var _noticeData = [];
+var NOTICE_CACHE_KEY = 'notice_cache';
+var NOTICE_CACHE_TTL = 5 * 60 * 1000; // 5분 캐시
+
+// TSV 파서 — 탭 구분자 사용
+function parseCsvRow(row) {
+  return row.split('\t').map(function(c) { return c.trim(); });
+}
+
+// 구분 태그 색상 — 실제 시트 카테고리 값 기준
+function getCatClass(cat) {
+  if (!cat) return 'default';
+  if (cat.indexOf('신규') > -1) return 'new';
+  if (cat.indexOf('정책') > -1) return 'notice';
+  if (cat.indexOf('품목') > -1 || cat.indexOf('배포') > -1) return 'update';
+  if (cat.indexOf('계약') > -1) return 'info';
+  if (cat.indexOf('안내') > -1) return 'info';
+  if (cat.indexOf('교육') > -1) return 'event';
+  if (cat.indexOf('단종') > -1) return 'urgent';
+  if (cat.indexOf('마이그레이션') > -1) return 'check';
+  if (cat.indexOf('영업') > -1) return 'update';
+  return 'default';
+}
+
+// 링크 정규화 — http 없는 URL도 처리
+function normalizeLink(link) {
+  if (!link) return '';
+  link = link.trim();
+  if (!link) return '';
+  if (/^https?:\/\//i.test(link)) return link;
+  if (/^\/\//.test(link)) return 'https:' + link;
+  return 'https://' + link;
+}
+
+function renderNoticeRows(data, tbodyId, limit) {
+  var tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  var rows = limit ? data.slice(0, limit) : data;
+  var totalCount = data.length;
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text-muted)">등록된 공지사항이 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(function(r, i) {
+    var no     = totalCount - i;
+    var cat    = r[0] || '';
+    var title  = r[1] || '';
+    var date   = r[2] || '';
+    var author = r[3] || '';
+    var linkUrl = normalizeLink(r[4] || '');
+    var linkHtml = linkUrl
+      ? '<a class="notice-link" href="' + linkUrl + '" target="_blank" rel="noopener">바로가기</a>'
+      : '<span style="color:var(--text-light)">—</span>';
+    return '<tr>'
+      + '<td style="text-align:center;color:var(--text-muted)">' + no + '</td>'
+      + '<td><span class="notice-cat ' + getCatClass(cat) + '">' + cat + '</span></td>'
+      + '<td class="td-title">' + title + '</td>'
+      + '<td style="white-space:nowrap">' + date + '</td>'
+      + '<td>' + author + '</td>'
+      + '<td style="text-align:center">' + linkHtml + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+// 캐시 적용
+function fetchNotices(callback) {
+  try {
+    var cached = sessionStorage.getItem(NOTICE_CACHE_KEY);
+    if (cached) {
+      var obj = JSON.parse(cached);
+      if (Date.now() - obj.ts < NOTICE_CACHE_TTL) {
+        callback(null, obj.data);
+        return;
+      }
+    }
+  } catch(e) {}
+
+  fetch(NOTICE_SHEET_URL)
+    .then(function(res) { return res.text(); })
+    .then(function(tsv) {
+      var lines = tsv.trim().split('\n');
+      // 첫 행이 빈 행(탭만 있는 헤더)이면 제거, 아니면 유효한 첫 행도 포함
+      var dataLines = lines.filter(function(l) {
+        return l.replace(/\t/g, '').trim().length > 0;
+      });
+      // 첫 행이 실제 데이터인지 헤더인지 판단: B열(r[1])이 숫자나 날짜 패턴이 아니면 헤더로 간주
+      var firstRow = parseCsvRow(dataLines[0]);
+      var startsWithHeader = !firstRow[1] || /^[가-힣]{1,10}$/.test(firstRow[1]) === false && firstRow[2] && !/\d{2}\./.test(firstRow[2]);
+      var data = (startsWithHeader ? dataLines.slice(1) : dataLines)
+        .map(parseCsvRow)
+        .filter(function(r) { return r[1] && r[1].length > 1; });
+      try { sessionStorage.setItem(NOTICE_CACHE_KEY, JSON.stringify({ts: Date.now(), data: data})); } catch(e) {}
+      callback(null, data);
+    })
+    .catch(function(err) { callback(err, null); });
+}
+
+function loadNotices() {
+  var statusEl = document.getElementById('notice-status');
+  fetchNotices(function(err, data) {
+    if (err || !data) {
+      var tbody = document.getElementById('notice-list');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--danger)">공지사항을 불러오지 못했습니다.</td></tr>';
+      if (statusEl) statusEl.textContent = '(오류)';
+      return;
+    }
+    _noticeData = data;
+    renderNoticeRows(_noticeData, 'notice-list', 0);
+    if (statusEl) statusEl.textContent = '(' + _noticeData.length + '건)';
+  });
+}
+
+// 페이지 로드 시 공지 불러오기 (캐시 강제 갱신)
+window.addEventListener('load', function(){
+  try { sessionStorage.removeItem(NOTICE_CACHE_KEY); } catch(e) {}
+  loadNotices();
+});
+
+// ══════════════════════════════
+// 포털 내비게이션
+// ══════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.gnb-btn').forEach(function(b){ b.classList.remove('active'); });
+  var pg = document.getElementById('page-' + id);
+  if(pg) pg.classList.add('active');
+  var nb = document.getElementById('nav-' + id);
+  if(nb) nb.classList.add('active');
+}
+
+// ══════════════════════════════
+// 할인 계산
+// ══════════════════════════════
+function applyDiscount(){
+  var rate = parseFloat(document.getElementById('disc_rate').value) || 0;
+  document.getElementById('disc_amt').value = 0;
+  calcDiscount(rate, 0);
+}
+function applyDiscountAmt(){
+  var amt = parseInt(document.getElementById('disc_amt').value) || 0;
+  document.getElementById('disc_rate').value = 0;
+  calcDiscount(0, amt);
+}
+function calcDiscount(rate, fixedAmt){
+  var supplyEl = document.getElementById('sum_supply');
+  var oneaiEl  = document.getElementById('sum_oneai');
+  if(!supplyEl) return;
+  var supply = parseInt((supplyEl.textContent || '0').replace(/[^0-9]/g,'')) || 0;
+  var oneai  = parseInt((oneaiEl  ? oneaiEl.textContent  : '0').replace(/[^0-9]/g,'')) || 0;
+  var discountable = supply - oneai;
+  var disc = rate > 0 ? Math.round(discountable * rate / 100) : fixedAmt;
+  var newSupply = supply - disc;
+  var newVat = Math.round(newSupply * 0.1);
+  var newTotal = newSupply + newVat;
+  var el = document.getElementById('disc_total');
+  if(el) el.textContent = newTotal.toLocaleString('ko-KR') + '원 (VAT포함)';
+}
+
+// ══════════════════════════════
+// PDF 저장
+// ══════════════════════════════
+function exportPDF(){
+  window.print();
+}
+
+// ══════════════════════════════
+// updateSummary 후킹 — 할인 재계산
+// ══════════════════════════════
+var _origUpdateSummary;
+window.addEventListener('load', function(){
+  if(typeof updateSummary === 'function'){
+    _origUpdateSummary = updateSummary;
+    updateSummary = function(){
+      _origUpdateSummary();
+      var r = parseFloat((document.getElementById('disc_rate')||{}).value)||0;
+      var a = parseInt((document.getElementById('disc_amt')||{}).value)||0;
+      if(r>0||a>0) calcDiscount(r,a);
+      else { var el=document.getElementById('disc_total'); if(el) el.textContent='—'; }
+    };
+  }
+});
+
+// ══════════════════════════════
+// FAQ 체크리스트 (미사용 — 유지)
+// ══════════════════════════════
+function updateChk(){
+  var total=10, done=0;
+  for(var i=1;i<=total;i++){
+    var el=document.getElementById('c'+i);
+    if(!el) continue;
+    var li=el.closest('.chk-item');
+    if(el.checked){ done++; if(li) li.classList.add('checked'); }
+    else { if(li) li.classList.remove('checked'); }
+  }
+  var pct=Math.round(done/total*100);
+  var bar=document.getElementById('chk-bar');
+  var lbl=document.getElementById('chk-pct');
+  var txt=document.getElementById('chk-progress-txt');
+  if(bar) bar.style.width=pct+'%';
+  if(lbl) lbl.textContent=pct+'% 완료';
+  if(txt) txt.textContent=done+' / '+total+' 완료';
+  if(done===total){
+    if(bar) bar.style.background='var(--success)';
+    if(lbl) lbl.textContent='✅ 모든 항목 완료! 발주 시스템으로 이동하세요.';
+  } else {
+    if(bar) bar.style.background='var(--teal)';
+  }
+}
+function resetChk(){
+  for(var i=1;i<=10;i++){
+    var el=document.getElementById('c'+i);
+    if(el){ el.checked=false; var li=el.closest('.chk-item'); if(li) li.classList.remove('checked'); }
+  }
+  updateChk();
+}
+
+// ══════════════════════════════
+// FAQ 토글 (정적)
+// ══════════════════════════════
+function toggleFaq(el){
+  var ans=el.nextElementSibling;
+  var isOpen=ans.classList.contains('show');
+  document.querySelectorAll('.faq-a').forEach(function(a){ a.classList.remove('show'); });
+  document.querySelectorAll('.faq-q').forEach(function(q){ q.classList.remove('open'); });
+  if(!isOpen){ ans.classList.add('show'); el.classList.add('open'); }
+}
+
+// ══════════════════════════════
+// 발주 FAQ — 구글시트 연동
+// ══════════════════════════════
+var FAQ_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQXaiGr-grYrHrxlgvDVgPSUMbyvKFemlQb6hje_nYZYrXUJ9D7gbg35DVR_RV3sTFlnSMueeetRUc7/pub?gid=765680480&single=true&output=tsv';
+// 컬럼 순서: A=카테고리, B=질문, C=답변
+var _faqData = [];
+var _faqActiveCat = '';
+var FAQ_CACHE_KEY = 'faq_cache';
+var FAQ_CACHE_TTL = 5 * 60 * 1000;
+
+function fetchFaq(callback) {
+  try {
+    var cached = sessionStorage.getItem(FAQ_CACHE_KEY);
+    if (cached) {
+      var obj = JSON.parse(cached);
+      if (Date.now() - obj.ts < FAQ_CACHE_TTL) { callback(null, obj.data); return; }
+    }
+  } catch(e) {}
+  fetch(FAQ_SHEET_URL)
+    .then(function(res) { return res.text(); })
+    .then(function(tsv) {
+      // 빈 행 제거 후 헤더(첫 행) 제거
+      var lines = tsv.trim().split('\n')
+        .filter(function(l) { return l.replace(/\t/g,'').trim().length > 0; })
+        .slice(1);
+      var data = lines
+        .map(function(l) { return l.split('\t').map(function(c){ return c.trim(); }); })
+        .filter(function(r) { return r[1]; }); // B열(질문) 있는 행만
+      try { sessionStorage.setItem(FAQ_CACHE_KEY, JSON.stringify({ts: Date.now(), data: data})); } catch(e) {}
+      callback(null, data);
+    })
+    .catch(function(err) { callback(err, null); });
+}
+
+function loadFaq() {
+  var statusEl = document.getElementById('faq-status');
+  var countEl  = document.getElementById('faq-count');
+  if (statusEl) statusEl.textContent = '불러오는 중…';
+  fetchFaq(function(err, data) {
+    if (err || !data) {
+      document.getElementById('faq-list').innerHTML =
+        '<div style="text-align:center;padding:40px;color:var(--danger);font-size:12px">FAQ를 불러오지 못했습니다.<br>구글시트 URL을 확인하거나 새로고침하세요.</div>';
+      if (statusEl) statusEl.textContent = '(오류)';
+      return;
+    }
+    _faqData = data;
+    if (statusEl) statusEl.textContent = '';
+    if (countEl) countEl.textContent = '전체 ' + data.length + '건';
+    renderFaqCatFilters();
+    renderFaqList(_faqData);
+  });
+}
+
+function renderFaqCatFilters() {
+  var cats = [];
+  _faqData.forEach(function(r) { if (r[0] && cats.indexOf(r[0]) === -1) cats.push(r[0]); });
+  var wrap = document.getElementById('faq-cat-filters');
+  if (!wrap) return;
+  if (!cats.length) { wrap.style.display = 'none'; return; }
+  var html = '<button class="faq-cat-btn active" onclick="setFaqCat(\'\')" id="faq-cat-all">전체</button>';
+  cats.forEach(function(cat) {
+    html += '<button class="faq-cat-btn" onclick="setFaqCat(\''+cat+'\')" id="faq-cat-'+encodeURIComponent(cat)+'">'+cat+'</button>';
+  });
+  wrap.innerHTML = html;
+}
+
+function setFaqCat(cat) {
+  _faqActiveCat = cat;
+  document.querySelectorAll('.faq-cat-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  var activeId = cat === '' ? 'faq-cat-all' : 'faq-cat-'+encodeURIComponent(cat);
+  var activeBtn = document.getElementById(activeId);
+  if (activeBtn) activeBtn.classList.add('active');
+  filterFaq();
+}
+
+function filterFaq() {
+  var kw = (document.getElementById('faq-search').value || '').trim().toLowerCase();
+  var filtered = _faqData.filter(function(r) {
+    var catOk = !_faqActiveCat || r[0] === _faqActiveCat;
+    // B=r[1] 질문, C=r[2] 답변 검색
+    var kwOk  = !kw || (r[1]||'').toLowerCase().indexOf(kw) > -1 || (r[2]||'').toLowerCase().indexOf(kw) > -1;
+    return catOk && kwOk;
+  });
+  var countEl = document.getElementById('faq-count');
+  if (countEl) {
+    countEl.textContent = (kw || _faqActiveCat)
+      ? '검색 결과 ' + filtered.length + '건'
+      : '전체 ' + _faqData.length + '건';
+  }
+  renderFaqList(filtered, kw);
+}
+
+var FAQ_CAT_COLORS = ['#dbeafe:#1d4ed8','#dcfce7:#166534','#fef3c7:#92400e','#f3e8ff:#7c3aed','#fee2e2:#991b1b','#ccfbf1:#0f766e','#fff7ed:#c2410c'];
+function getFaqCatStyle(cat, cats) {
+  var idx = cats.indexOf(cat) % FAQ_CAT_COLORS.length;
+  var pair = FAQ_CAT_COLORS[idx < 0 ? 0 : idx].split(':');
+  return 'background:'+pair[0]+';color:'+pair[1];
+}
+
+// D열 링크 파싱 — 줄바꿈(\n)으로 복수 링크, 각 줄은 "이름,URL" 또는 "URL" 형식
+function parseFaqLinks(raw) {
+  if (!raw) return [];
+  return raw.split('\n')
+    .map(function(line) { return line.trim(); })
+    .filter(Boolean)
+    .map(function(line) {
+      var commaIdx = line.indexOf(',');
+      if (commaIdx > 0 && commaIdx < 40) {
+        var name = line.slice(0, commaIdx).trim();
+        var url  = normalizeLink(line.slice(commaIdx + 1).trim());
+        return url ? { name: name, url: url } : null;
+      } else {
+        var url = normalizeLink(line);
+        return url ? { name: '바로가기', url: url } : null;
+      }
+    })
+    .filter(Boolean);
+}
+
+function renderFaqList(data, highlight) {
+  var wrap = document.getElementById('faq-list');
+  if (!wrap) return;
+  if (!data.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:12px">검색 결과가 없습니다.</div>';
+    return;
+  }
+  var allCats = [];
+  _faqData.forEach(function(r){ if(r[0] && allCats.indexOf(r[0])===-1) allCats.push(r[0]); });
+  wrap.innerHTML = data.map(function(r) {
+    var cat   = r[0] || '';                  // A열: 구분
+    var q     = r[1] || '';                  // B열: 질문
+    var a     = r[2] || '';                  // C열: 답변
+    var links = parseFaqLinks(r[3] || '');   // D열: 링크 (복수 가능)
+    var qHl   = highlight ? hlText(q, highlight) : q;
+    var aHl   = highlight ? hlText(a, highlight) : a;
+    var badgeStyle = cat ? getFaqCatStyle(cat, allCats) : '';
+    var badge = cat ? '<span class="faq-cat-badge" style="'+badgeStyle+'">'+cat+'</span>' : '';
+    var linkHtml = links.length
+      ? '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap">'
+        + links.map(function(lk) {
+            return '<a href="'+lk.url+'" target="_blank" rel="noopener"'
+              + ' style="display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:var(--radius-sm);'
+              + 'background:var(--install-bg);color:var(--install-color);font-size:11px;font-weight:600;'
+              + 'text-decoration:none;transition:background .15s;white-space:nowrap"'
+              + ' onmouseover="this.style.background=\'#dbeafe\'" onmouseout="this.style.background=\'var(--install-bg)\'">'
+              + '🔗 ' + lk.name + '</a>';
+          }).join('')
+        + '</div>'
+      : '';
+    return '<div class="faq-item">'
+      + '<div class="faq-q" onclick="toggleFaqDyn(this)">'
+      + '<div class="faq-q-left">' + badge + '<span>' + qHl + '</span></div>'
+      + '<span class="faq-q-arrow">▾</span>'
+      + '</div>'
+      + '<div class="faq-a">' + aHl + linkHtml + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function toggleFaqDyn(el) {
+  var ans = el.nextElementSibling;
+  var isOpen = ans.classList.contains('show');
+  wrap = document.getElementById('faq-list');
+  if (wrap) {
+    wrap.querySelectorAll('.faq-a').forEach(function(a){ a.classList.remove('show'); });
+    wrap.querySelectorAll('.faq-q').forEach(function(q){ q.classList.remove('open'); });
+  }
+  if (!isOpen) { ans.classList.add('show'); el.classList.add('open'); }
+}
+
+function hlText(text, kw) {
+  if (!kw) return text;
+  var re = new RegExp('(' + kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return text.replace(re, '<mark style="background:#fef3c7;color:#92400e;border-radius:2px">$1</mark>');
+}
+
+function faqReload() {
+  try { sessionStorage.removeItem(FAQ_CACHE_KEY); } catch(e) {}
+  document.getElementById('faq-list').innerHTML = '<div style="text-align:center;padding:28px;color:var(--text-muted);font-size:12px">불러오는 중…</div>';
+  loadFaq();
+}
+
+// FAQ 페이지 진입 시 자동 로드 (캐시 강제 갱신)
+window.addEventListener('load', function(){
+  try { sessionStorage.removeItem(FAQ_CACHE_KEY); } catch(e) {}
+  loadFaq();
+});
+
+// ══════════════════════════════
+// FlipHTML5 임베드 상태 처리
+// ══════════════════════════════
+function flipLoaded(){
+  // iframe 로드 완료 — 정상 표시
+}
+function flipError(){
+  var fb=document.getElementById('flipbook-fallback');
+  var fi=document.getElementById('flipbook-iframe');
+  if(fb){ fb.style.display='block'; }
+  if(fi){ fi.style.display='none'; }
+}
+function reloadFlip(){
+  var fi=document.getElementById('flipbook-iframe');
+  if(fi){ fi.src=fi.src; }
+}
+// X-Frame-Options 차단 감지 (3초 후 높이로 체크)
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var fi=document.getElementById('flipbook-iframe');
+    if(!fi) return;
+    try {
+      // 접근 시 cross-origin 에러가 나면 로드된 것
+    } catch(e) {
+      // 차단된 경우 fallback 표시
+      flipError();
+    }
+  }, 3000);
+});
+</script>
+</div><!-- /page-quote -->
 </body>
 </html>
