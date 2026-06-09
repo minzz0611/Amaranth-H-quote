@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Amaranth H 견적서 작성 도구</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#1a3a5c;--primary-light:#2563a8;--accent:#e8390e;--bg:#f0f2f5;--bg-card:#ffffff;--border:#d1d9e6;--text:#1e293b;--text-muted:#64748b;--text-light:#94a3b8;--install-color:#1d4ed8;--cloud-color:#0891b2;--install-bg:#eff6ff;--cloud-bg:#ecfeff;--success:#059669;--warning:#d97706;--danger:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.1);--shadow-md:0 4px 6px -1px rgba(0,0,0,.1);--radius:8px;--radius-sm:4px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+.topbar{background:var(--primary);color:#fff;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar-logo{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.topbar-logo span{color:#60a5fa}
+.topbar-subtitle{font-size:11px;color:#93c5fd;font-weight:400}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.btn{padding:6px 14px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-size:12px;font-family:inherit;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-ghost{background:rgba(255,255,255,.1);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.2)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#047857}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{background:var(--bg)}
+.app-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;padding:16px;max-width:1600px;margin:0 auto;align-items:start}
+.main-col{min-width:0;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow)}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:6px}
+.card-body{padding:16px}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;color:var(--text-muted);font-weight:500}
+.form-group input,.form-group select{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:inherit;color:var(--text);background:#fff;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary-light);box-shadow:0 0 0 2px rgba(37,99,168,.1)}
+.type-selector{display:flex;gap:8px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+.type-btn{flex:1;padding:10px 12px;border-radius:var(--radius-sm);border:2px solid var(--border);cursor:pointer;font-size:12px;font-family:inherit;font-weight:600;text-align:center;transition:all .2s;background:#fff;color:var(--text-muted)}
+.type-btn:hover:not(.active-install):not(.active-cloud){background:var(--bg)}
+.type-btn.active-install{background:var(--install-bg);color:var(--install-color);border-color:var(--install-color);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+.type-btn.active-cloud{background:var(--cloud-bg);color:var(--cloud-color);border-color:var(--cloud-color);box-shadow:0 0 0 3px rgba(8,145,178,.1)}
+.tab-nav{display:flex;gap:2px;padding:12px 16px 0;border-bottom:1px solid var(--border);overflow-x:auto;background:var(--bg-card);border-radius:var(--radius) var(--radius) 0 0}
+.tab-btn{padding:7px 14px;border:none;background:none;cursor:pointer;font-size:12px;font-family:inherit;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.tab-btn:hover{color:var(--primary);background:var(--bg)}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.tab-content{display:none;padding:16px}
+.tab-content.active{display:block}
+.section-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.item-row{display:grid;grid-template-columns:24px 1fr auto auto auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f1f5f9;transition:background .1s}
+.item-row:hover{background:#fafbfc;margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:4px}
+.item-row:last-child{border-bottom:none}
+.item-check{cursor:pointer;accent-color:var(--primary);width:14px;height:14px}
+.item-name{font-size:12px;color:var(--text);font-weight:500}
+.item-name .item-note{font-size:11px;color:var(--text-muted);font-weight:400;display:block}
+.item-unit{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.qty-input{width:70px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:inherit;text-align:right;transition:border-color .15s}
+.qty-input:focus{outline:none;border-color:var(--primary-light)}
+.item-amount{font-size:12px;font-weight:600;color:var(--primary);text-align:right;white-space:nowrap;min-width:110px}
+.item-amount.negotiate{color:var(--text-muted);font-weight:400;font-style:italic}
+.item-amount.free{color:var(--success)}
+.user-calc-row{background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin:4px 0}
+.user-calc-header{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center}
+.user-calc-detail{font-size:11px;color:var(--primary-light);background:var(--install-bg);padding:4px 8px;border-radius:var(--radius-sm);margin-top:6px;display:none}
+.user-calc-detail.show{display:block}
+.warning-msg{display:flex;align-items:flex-start;gap:6px;padding:7px 10px;border-radius:var(--radius-sm);font-size:11px;margin:6px 0}
+.warning-msg.info{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.warning-msg.warn{background:#fffbeb;color:var(--warning);border:1px solid #fde68a}
+.summary-panel{position:sticky;top:68px}
+.summary-type-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-install{background:var(--install-bg);color:var(--install-color)}
+.badge-cloud{background:var(--cloud-bg);color:var(--cloud-color)}
+.summary-section{border-bottom:1px solid var(--border);padding:10px 0}
+.summary-section:last-child{border-bottom:none}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px}
+.summary-label{color:var(--text-muted)}
+.summary-value{font-weight:600;color:var(--primary)}
+.summary-subtotal{background:#f8fafc;border-radius:var(--radius-sm);padding:8px 12px;margin:8px 0}
+.summary-subtotal-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0}
+.summary-total{background:var(--primary);color:#fff;border-radius:var(--radius-sm);padding:12px;margin-top:8px}
+.summary-total-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:3px 0}
+.summary-total-row.main{font-size:15px;font-weight:700;padding-top:6px;border-top:1px solid rgba(255,255,255,.2);margin-top:4px}
+.summary-total-row .lbl{opacity:.85}
+.cloud-monthly{background:var(--cloud-bg);border:1px solid #a5f3fc;border-radius:var(--radius-sm);padding:10px 12px;margin-top:8px}
+.cloud-monthly-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:2px 0}
+.cloud-monthly-label{color:var(--cloud-color);font-weight:600}
+.negotiate-note{font-size:11px;color:var(--text-muted);padding:6px 0;border-top:1px dashed var(--border);margin-top:4px}
+.radio-group{display:flex;flex-direction:column;gap:4px}
+.radio-option{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.radio-option:hover{background:var(--bg)}
+.radio-option.selected{border-color:var(--primary-light);background:var(--install-bg)}
+.radio-option input[type=radio]{accent-color:var(--primary)}
+.radio-option-name{flex:1;font-size:12px;font-weight:500}
+.radio-option-price{font-size:12px;font-weight:600;color:var(--primary)}
+.radio-option-price.negotiate{color:var(--text-muted);font-weight:400;font-style:italic}
+.tag{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500}
+.tag-blue{background:#dbeafe;color:#1d4ed8}
+.tag-teal{background:#ccfbf1;color:#0f766e}
+.tag-amber{background:#fef3c7;color:#92400e}
+.tag-red{background:#fee2e2;color:#991b1b}
+.tag-gray{background:#f1f5f9;color:#475569}
+.mt-8{margin-top:8px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+@media print{.topbar,.tab-nav,.type-selector,.summary-panel,.btn{display:none!important}.app-layout{grid-template-columns:1fr}.tab-content{display:block!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div>
+      <div class="topbar-logo">Amaranth <span>H</span></div>
+      <div class="topbar-subtitle">견적서 작성 도구 v1.0 &nbsp;·&nbsp; 2026.05.11 표준가격표 기준</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-ghost" onclick="resetAll()">🔄 초기화</button>
+    <button class="btn btn-ghost" onclick="loadSaved()">📂 불러오기</button>
+    <button class="btn btn-ghost" onclick="saveData()">💾 저장</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨️ 인쇄</button>
+    <button class="btn btn-success" onclick="exportHTML()">📄 HTML 내보내기</button>
+  </div>
+</div>
+
+<div class="app-layout">
+<div class="main-col">
+
+<!-- 헤더 카드 -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 견적 기본 정보</div>
+    <span id="currentTypeBadge" class="summary-type-badge badge-install">● 설치형 400병상↓</span>
+  </div>
+  <div class="type-selector">
+    <button class="type-btn active-install" id="typeBtn-install400" onclick="setType('install400')">🏗️ 설치형<br><small style="font-weight:400">400병상↓</small></button>
+    <button class="type-btn" id="typeBtn-install300" onclick="setType('install300')">🏗️ 설치형<br><small style="font-weight:400">300병상↓</small></button>
+    <button class="type-btn" id="typeBtn-cloud200" onclick="setType('cloud200')">☁️ 클라우드형<br><small style="font-weight:400">200병상↓</small></button>
+  </div>
+  <div class="card-body">
+    <div class="form-grid">
+      <div class="form-group"><label>고객사명 *</label><input type="text" id="hdr_customer" placeholder="예: ○○병원" oninput="updateSummary()"></div>
+      <div class="form-group"><label>담당자명</label><input type="text" id="hdr_contact" placeholder="고객사 담당자"></div>
+      <div class="form-group"><label>견적번호</label><input type="text" id="hdr_quoteno"></div>
+      <div class="form-group"><label>견적일자</label><input type="date" id="hdr_date"></div>
+      <div class="form-group"><label>공급사명</label><input type="text" id="hdr_supplier" placeholder="영림원소프트랩"></div>
+      <div class="form-group"><label>영업센터</label><input type="text" id="hdr_center"></div>
+      <div class="form-group"><label>영업담당자</label><input type="text" id="hdr_sales"></div>
+      <div class="form-group"><label>견적담당자</label><input type="text" id="hdr_quoter"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 섹션 카드 -->
+<div class="card">
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('tab1',this)">1. 유저 사용료</button>
+    <button class="tab-btn" onclick="showTab('tab2',this)">2. ONE AI</button>
+    <button class="tab-btn" onclick="showTab('tab3',this)">3. 모듈 라이선스</button>
+    <button class="tab-btn" onclick="showTab('tab4',this)">4. ERP 옵션</button>
+    <button class="tab-btn" onclick="showTab('tab5',this)">5. 서비스</button>
+    <button class="tab-btn" onclick="showTab('tab6',this)">6. 장비연동</button>
+    <button class="tab-btn" onclick="showTab('tab7',this)">7. 마이그레이션</button>
+    <button class="tab-btn" onclick="showTab('tab8',this)">8. 교육/구축비</button>
+  </div>
+
+  <!-- TAB1 유저 -->
+  <div id="tab1" class="tab-content active">
+    <div id="tab1-install">
+      <div class="section-title">📦 설치형 — 유저 라이선스 <span class="tag tag-blue">일시납</span></div>
+      <div class="warning-msg info">ℹ️ 전문가/사용자 유저는 구간별 단가가 다릅니다. 수량 입력 시 자동 계산됩니다.</div>
+      <div class="item-row">
+        <input type="checkbox" class="item-check" id="chk_ebp" onchange="updateSummary()">
+        <div class="item-name">EBP 기본엔진<span class="item-note">설치형 기본 제공</span></div>
+        <span class="tag tag-gray">0원 수주</span><span></span>
+        <span class="item-amount free">무상</span>
+      </div>
+      <!-- ERP 유저 -->
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_erp_user" onchange="calcErpUser()">
+            <div><div style="font-size:12px;font-weight:500">전문가(ERP) 유저 라이선스</div>
+            <div style="font-size:11px;color:var(--text-muted)">1~10유저: 300,000원 / 11유저↑: 250,000원</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_erp_user" min="0" value="0" oninput="calcErpUser()">
+          </div>
+          <span class="item-amount" id="amt_erp_user">0원</span>
+        </div>
+        <div class="user-calc-detail" id="detail_erp_user"></div>
+      </div>
+      <!-- EMR 유저 -->
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_emr_user" onchange="calcEmrUser()">
+            <div><div style="font-size:12px;font-weight:500">사용자(EMR) 유저 라이선스</div>
+            <div style="font-size:11px;color:var(--text-muted)">1~500유저: 150,000원 / 501↑: 별도협의</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_emr_user" min="0" value="0" oninput="calcEmrUser()">
+          </div>
+          <span class="item-amount" id="amt_emr_user">0원</span>
+        </div>
+        <div class="user-calc-detail" id="detail_emr_user"></div>
+      </div>
+      <!-- 임직원 유저 -->
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_emp_user" onchange="calcEmpUser()">
+            <div><div style="font-size:12px;font-weight:500">사용자(임직원) 유저 라이선스</div>
+            <div style="font-size:11px;color:var(--text-muted)">1~500유저: 100,000원 / 501↑: 별도협의</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_emp_user" min="0" value="0" oninput="calcEmpUser()">
+          </div>
+          <span class="item-amount" id="amt_emp_user">0원</span>
+        </div>
+        <div class="user-calc-detail" id="detail_emp_user"></div>
+      </div>
+      <!-- 메일/연말정산/SSL 설치형 -->
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_mail_user_i" onchange="updateSummary()">
+            <div><div style="font-size:12px;font-weight:500">메일 사용 유저 라이선스</div>
+            <div style="font-size:11px;color:var(--text-muted)">40,000원/유저</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_mail_user_i" min="0" value="0" oninput="updateSummary()">
+          </div>
+          <span class="item-amount" id="amt_mail_user_i">0원</span>
+        </div>
+      </div>
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_yr_user_i" onchange="updateSummary()">
+            <div><div style="font-size:12px;font-weight:500">연말정산 유저 라이선스</div>
+            <div style="font-size:11px;color:var(--text-muted)">3,000원/년/유저</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_yr_user_i" min="0" value="0" oninput="updateSummary()">
+          </div>
+          <span class="item-amount" id="amt_yr_user_i">0원</span>
+        </div>
+      </div>
+      <div class="item-row">
+        <input type="checkbox" class="item-check" id="chk_ssl_i" onchange="updateSummary()">
+        <div class="item-name">기본 SSL 인증서<span class="item-note">500,000원/년</span></div>
+        <span class="tag tag-gray">상품</span>
+        <input type="number" class="qty-input" id="qty_ssl_i" min="1" value="1" oninput="updateSummary()">
+        <span class="item-amount" id="amt_ssl_i">0원</span>
+      </div>
+    </div>
+
+    <div id="tab1-cloud" style="display:none">
+      <div class="section-title">☁️ 클라우드형 — 유저 사용료 <span class="tag tag-teal">월정액</span></div>
+      <div class="warning-msg info">ℹ️ 클라우드형은 월정액 기준입니다. 유저 수 구간별 단가가 다릅니다.</div>
+      <!-- ERP 클라우드 -->
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_erp_cloud" onchange="calcErpCloud()">
+            <div><div style="font-size:12px;font-weight:500">전문가(ERP) 유저 사용료</div>
+            <div style="font-size:11px;color:var(--text-muted)">1~10: 50,000 / 11~50: 40,000 / 51↑: 별도협의 (원/월/유저)</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_erp_cloud" min="0" value="0" oninput="calcErpCloud()">
+          </div>
+          <span class="item-amount" id="amt_erp_cloud">0원/월</span>
+        </div>
+        <div class="user-calc-detail" id="detail_erp_cloud"></div>
+      </div>
+      <!-- EMR 클라우드 -->
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_emr_cloud" onchange="calcEmrCloud()">
+            <div><div style="font-size:12px;font-weight:500">사용자(EMR) 유저 사용료</div>
+            <div style="font-size:11px;color:var(--text-muted)">1~50: 25,000 / 51~100: 22,000 / 101~300: 20,000 / 301↑: 15,000 (원/월)</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_emr_cloud" min="0" value="0" oninput="calcEmrCloud()">
+          </div>
+          <span class="item-amount" id="amt_emr_cloud">0원/월</span>
+        </div>
+        <div class="user-calc-detail" id="detail_emr_cloud"></div>
+      </div>
+      <!-- 임직원 클라우드 -->
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_emp_cloud" onchange="calcEmpCloud()">
+            <div><div style="font-size:12px;font-weight:500">사용자(임직원) 유저 사용료</div>
+            <div style="font-size:11px;color:var(--text-muted)">1~50: 13,000 / 51~100: 12,000 / 101~300: 11,000 / 301↑: 10,000 (원/월)</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_emp_cloud" min="0" value="0" oninput="calcEmpCloud()">
+          </div>
+          <span class="item-amount" id="amt_emp_cloud">0원/월</span>
+        </div>
+        <div class="user-calc-detail" id="detail_emp_cloud"></div>
+      </div>
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_mail_cloud" onchange="updateSummary()">
+            <div><div style="font-size:12px;font-weight:500">메일 유저 사용료</div>
+            <div style="font-size:11px;color:var(--text-muted)">2,000원/월/유저</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_mail_cloud" min="0" value="0" oninput="updateSummary()">
+          </div>
+          <span class="item-amount" id="amt_mail_cloud">0원/월</span>
+        </div>
+      </div>
+      <div class="user-calc-row">
+        <div class="user-calc-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="item-check" id="chk_yr_cloud" onchange="updateSummary()">
+            <div><div style="font-size:12px;font-weight:500">연말정산 유저 사용료</div>
+            <div style="font-size:11px;color:var(--text-muted)">3,000원/년/유저</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--text-muted)">유저 수</span>
+            <input type="number" class="qty-input" id="qty_yr_cloud" min="0" value="0" oninput="updateSummary()">
+          </div>
+          <span class="item-amount" id="amt_yr_cloud">0원/년</span>
+        </div>
+      </div>
+      <div class="item-row">
+        <input type="checkbox" class="item-check" id="chk_ssl_c" onchange="updateSummary()">
+        <div class="item-name">기본 SSL 인증서<span class="item-note">500,000원/년</span></div>
+        <span class="tag tag-gray">상품</span>
+        <input type="number" class="qty-input" id="qty_ssl_c" min="1" value="1" oninput="updateSummary()">
+        <span class="item-amount" id="amt_ssl_c">0원</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB2 ONE AI -->
+  <div id="tab2" class="tab-content">
+    <div class="section-title">🤖 ONE AI 사용료 <span class="tag tag-amber">연납</span> <span class="tag tag-red">할인불가</span></div>
+    <div class="warning-msg warn">⚠️ ONE AI 요금제는 <strong>할인이 불가</strong>한 항목입니다. 설치형/클라우드형 동일 가격.</div>
+    <div class="radio-group" id="oneai-group"></div>
+    <div style="margin-top:8px;padding:10px;background:#fffbeb;border-radius:4px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--warning);font-weight:500">선택된 요금제:</span>
+      <span style="font-size:14px;font-weight:700;color:var(--primary)" id="oneai_selected_label">미선택</span>
+      <button class="btn btn-outline" style="font-size:11px;padding:3px 8px" onclick="clearOneAI()">선택 해제</button>
+    </div>
+  </div>
+
+  <!-- TAB3 모듈 -->
+  <div id="tab3" class="tab-content">
+    <div class="section-title">💼 ERP 모듈 <span class="tag tag-blue" id="module-type-tag">400병상↓</span></div>
+    <div class="warning-msg info">ℹ️ 도입 유형에 따라 가격이 자동으로 변경됩니다.</div>
+    <div id="erp-modules"></div>
+    <div class="section-title mt-8">🏥 EMR 모듈</div>
+    <div class="warning-msg warn" id="emr-pack-warning" style="display:none">⚠️ EMR 필수팩 선택 시: H_물류관리 모듈 필요 여부를 확인하세요.</div>
+    <div id="emr-modules"></div>
+  </div>
+
+  <!-- TAB4 ERP 옵션 -->
+  <div id="tab4" class="tab-content">
+    <div class="section-title">⚙️ ERP 옵션 기능</div>
+    <div id="erp-options-content"></div>
+  </div>
+
+  <!-- TAB5 서비스 -->
+  <div id="tab5" class="tab-content">
+    <div class="section-title">📱 팩스/문자 서비스</div>
+    <div id="fax-service-group" class="radio-group"></div>
+    <div class="section-title mt-8">👷 노무관리 (휴램프로)</div>
+    <div id="labor-service-group" class="radio-group"></div>
+    <div class="section-title mt-8">🔧 ERP 옵션 서비스</div>
+    <div class="item-row">
+      <input type="checkbox" class="item-check" id="chk_smart_evidence" onchange="updateSummary()">
+      <div class="item-name">스마트증빙<span class="item-note">조건부 무상</span></div>
+      <span class="tag tag-teal">조건부 무상</span><span></span>
+      <span class="item-amount free">0원</span>
+    </div>
+    <div class="item-row">
+      <input type="checkbox" class="item-check" id="chk_account_verify" onchange="updateSummary()">
+      <div class="item-name">예금주실명조회<span class="item-note">조건부 무상</span></div>
+      <span class="tag tag-teal">조건부 무상</span><span></span>
+      <span class="item-amount free">0원</span>
+    </div>
+  </div>
+
+  <!-- TAB6 장비연동 -->
+  <div id="tab6" class="tab-content">
+    <div class="section-title">🔌 장비연동</div>
+    <div id="equipment-items"></div>
+  </div>
+
+  <!-- TAB7 마이그레이션 -->
+  <div id="tab7" class="tab-content">
+    <div class="section-title">📦 마이그레이션 / 커스터마이징 <span class="tag tag-blue" id="migration-type-tag">400병상↓</span></div>
+    <div id="migration-items"></div>
+  </div>
+
+  <!-- TAB8 교육/구축비 -->
+  <div id="tab8" class="tab-content">
+    <div class="section-title">🎓 교육비 / 구축비 <span class="tag tag-blue" id="edu-type-tag">400병상↓</span></div>
+    <div id="edu-items"></div>
+  </div>
+
+</div><!-- /card -->
+</div><!-- /main-col -->
+
+<!-- 요약 패널 -->
+<div class="summary-panel">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💰 금액 요약</div>
+      <span id="summaryTypeBadge" class="summary-type-badge badge-install">설치형 400병상↓</span>
+    </div>
+    <div class="card-body" style="padding:12px 14px">
+      <div class="summary-section">
+        <div class="summary-row"><span class="summary-label">① 유저 사용료</span><span class="summary-value" id="sum_user">0원</span></div>
+        <div class="summary-row"><span class="summary-label">② ONE AI</span><span class="summary-value" id="sum_oneai">0원</span></div>
+        <div class="summary-row"><span class="summary-label">③ 모듈 라이선스</span><span class="summary-value" id="sum_module">0원</span></div>
+        <div class="summary-row"><span class="summary-label">④ ERP 옵션</span><span class="summary-value" id="sum_option">0원</span></div>
+        <div class="summary-row"><span class="summary-label">⑤ 서비스</span><span class="summary-value" id="sum_service">0원</span></div>
+        <div class="summary-row"><span class="summary-label">⑥ 장비연동</span><span class="summary-value" id="sum_equipment">0원</span></div>
+        <div class="summary-row"><span class="summary-label">⑦ 마이그레이션</span><span class="summary-value" id="sum_migration">0원</span></div>
+        <div class="summary-row"><span class="summary-label">⑧ 교육/구축비</span><span class="summary-value" id="sum_edu">0원</span></div>
+      </div>
+      <div class="summary-subtotal">
+        <div class="summary-subtotal-row">
+          <span style="font-weight:600">공급가액 (VAT별도)</span>
+          <span style="font-weight:700;color:var(--primary);font-size:13px" id="sum_supply">0원</span>
+        </div>
+        <div class="summary-subtotal-row">
+          <span style="color:var(--text-muted)">VAT (10%)</span>
+          <span style="color:var(--text-muted)" id="sum_vat">0원</span>
+        </div>
+      </div>
+      <div class="summary-total">
+        <div class="summary-total-row"><span class="lbl">합계 (VAT 포함)</span></div>
+        <div class="summary-total-row main">
+          <span class="lbl">총 견적금액</span>
+          <span id="sum_total">0원</span>
+        </div>
+      </div>
+      <div id="cloud-monthly-panel" class="cloud-monthly" style="display:none">
+        <div class="cloud-monthly-label">☁️ 클라우드 월정액 현황</div>
+        <div class="cloud-monthly-row" style="margin-top:6px">
+          <span style="color:var(--text-muted);font-size:11px">유저 사용료 (월)</span>
+          <span style="font-weight:600;color:var(--cloud-color)" id="cloud_user_monthly">0원</span>
+        </div>
+        <div class="cloud-monthly-row">
+          <span style="color:var(--text-muted);font-size:11px">서비스 (월)</span>
+          <span style="font-weight:600;color:var(--cloud-color)" id="cloud_service_monthly">0원</span>
+        </div>
+        <div class="cloud-monthly-row" style="border-top:1px solid #a5f3fc;padding-top:4px;margin-top:4px">
+          <span style="font-weight:600;color:var(--cloud-color)">월 합계</span>
+          <span style="font-weight:700;font-size:13px;color:var(--cloud-color)" id="cloud_total_monthly">0원</span>
+        </div>
+        <div class="cloud-monthly-row" style="margin-top:2px">
+          <span style="font-size:11px;color:var(--text-muted)">연 환산 (×12)</span>
+          <span style="font-size:11px;color:var(--text-muted)" id="cloud_annual_equiv">0원</span>
+        </div>
+      </div>
+      <div id="negotiate-note" class="negotiate-note" style="display:none"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:10px">
+    <div class="card-header">
+      <div class="card-title">📌 선택 항목</div>
+      <span id="selected-count" style="font-size:11px;color:var(--text-muted)">0개</span>
+    </div>
+    <div class="card-body" style="padding:10px 14px;max-height:220px;overflow-y:auto">
+      <div id="selected-items-list" style="font-size:11px;color:var(--text-muted)">선택된 항목이 없습니다.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app-layout -->
+
+<script>
+// ==============================
+// STATE
+// ==============================
+var state = {
+  type: 'install400',
+  oneai: { selected: false, amount: 0, label: '' },
+  services: { fax: null, labor: null }
+};
+
+// ==============================
+// DATA TABLES
+// ==============================
+var MODULE_ERP = [
+  {id:'erp_acct', name:'H_회계 관리', p400:10000000, p300:10000000, p200:10000000},
+  {id:'erp_hr', name:'H_인사 관리', p400:25000000, p300:20000000, p200:15000000},
+  {id:'erp_logis', name:'H_물류관리', p400:15000000, p300:10000000, p200:5000000},
+  {id:'erp_budget', name:'H_예산 관리', p400:5500000, p300:5500000, p200:5500000, req:'회계 관리'},
+  {id:'erp_asset', name:'H_자산 관리', p400:4000000, p300:4000000, p200:4000000}
+];
+var MODULE_EMR = [
+  {id:'emr_core', name:'EMR 필수팩 기본엔진', p400:300000000, p300:205000000, p200:125000000, essential:true},
+  {id:'emr_stat', name:'병원통계', p400:20000000, p300:10000000, p200:5000000},
+  {id:'emr_er', name:'응급실', p400:30000000, p300:20000000, p200:10000000},
+  {id:'emr_surgery', name:'수술/마취', p400:20000000, p300:10000000, p200:5000000},
+  {id:'emr_dialysis', name:'인공신장실', p400:20000000, p300:10000000, p200:5000000},
+  {id:'emr_central', name:'중앙공급실', p400:20000000, p300:10000000, p200:5000000},
+  {id:'emr_social', name:'사회사업', p400:20000000, p300:10000000, p200:5000000},
+  {id:'emr_psqi', name:'PSQI', p400:5000000, p300:3000000, p200:1000000},
+  {id:'emr_health', name:'보건관리', p400:5000000, p300:2000000, p200:1000000}
+];
+var ERP_OPTIONS = [
+  {id:'opt_mobile_fund', cat:'회계', name:'H_모바일자금관리', amount:2000000, both:true},
+  {id:'opt_finlink', cat:'회계', name:'H_금융 서비스 연동', amount:3000000, both:true},
+  {id:'opt_autovoucher', cat:'회계', name:'H_자동 전표 처리', amount:4000000, both:true},
+  {id:'opt_attendance', cat:'인사', name:'H_근태리더기', amount:3000000, both:true},
+  {id:'opt_forme', cat:'인사', name:'H_모바일 ForMe', amount:1000000, both:true},
+  {id:'opt_budget_ctrl', cat:'예산', name:'H_예산회계 자율통제관리', amount:2000000, both:true},
+  {id:'opt_narcotics', cat:'물류', name:'H_마약류신고관리', amount:5000000, both:true},
+  {id:'opt_uc', cat:'UC', name:'H_UC 확장팩', amount:8000000, both:true},
+  {id:'opt_form_tmpl', cat:'UC', name:'H_양식제작', amount:100000, both:true, perUnit:true, unit:'본'},
+  {id:'opt_mail_sec', cat:'메일', name:'H_메일보안 유저 라이선스', amount:30000, installOnly:true, perUser:true, noDiscount:true},
+  {id:'opt_mail_apt', cat:'메일', name:'H_메일보안APT 유저 라이선스', amount:30000, installOnly:true, perUser:true, noDiscount:true},
+  {id:'opt_mail_arc', cat:'메일', name:'H_메일아카이빙 유저 라이선스', amount:100000, installOnly:true, perUser:true, noDiscount:true},
+  {id:'opt_mail_rep', cat:'메일', name:'H_대표(부서)메일', amount:40000, both:true, special:'mail_rep'},
+  {id:'opt_backup', cat:'공통', name:'Amaranth H 전용 백업 라이선스', amount:3300000, installOnly:true},
+  {id:'opt_storage', cat:'공통', name:'H_스토리지 요금제', amount:30000, cloudOnly:true, perMonth:true}
+];
+var FAX_PLANS = [
+  {id:'fax_600k', name:'60만 포인트', i:350000, c:30000, recv:5},
+  {id:'fax_1200k', name:'120만 포인트', i:700000, c:60000, recv:10},
+  {id:'fax_2400k', name:'240만 포인트', i:1400000, c:120000, recv:20},
+  {id:'fax_3600k', name:'360만 포인트', i:2100000, c:180000, recv:30},
+  {id:'fax_6000k', name:'600만 포인트', i:3500000, c:300000, recv:50}
+];
+var LABOR_PLANS = [
+  {id:'labor_50', name:'50유저↓', i:90000, c:7500},
+  {id:'labor_100', name:'100유저↓', i:150000, c:12500},
+  {id:'labor_150', name:'150유저↓', i:240000, c:20000},
+  {id:'labor_300', name:'300유저↓', i:450000, c:37500},
+  {id:'labor_400', name:'400유저↓', i:600000, c:50000},
+  {id:'labor_500', name:'500유저↓', i:750000, c:62500},
+  {id:'labor_501', name:'501유저↑', negotiate:true}
+];
+var EQUIPMENT_ITEMS = [
+  {id:'eq_device', name:'검사 장비연동', amount:2000000, perUnit:true, note:'연동업체 별도지출 포함'},
+  {id:'eq_pacs', name:'PACS', amount:6000000, note:'병원 자체 계약'},
+  {id:'eq_healthcheck', name:'건강검진 연동', amount:3000000, note:'새롬 연동'},
+  {id:'eq_dispenser', name:'약제조기', amount:5000000, note:'약국 약조제기 연동'},
+  {id:'eq_industrial', name:'산재조제기', amount:4000000, note:'약 분쇄기 연동'},
+  {id:'eq_kims', name:'약품조회', amount:3000000, note:'KIMS, 연납 청구'},
+  {id:'eq_access', name:'입출입연동', amount:6000000, note:'세콤, ADT'},
+  {id:'eq_parking', name:'주차연동', amount:4000000, note:'전용개발성'},
+  {id:'eq_etc', name:'기타', negotiate:true}
+];
+var MIGRATION_ITEMS = [
+  {id:'mig_emr_custom', name:'EMR 커스터마이징', negotiate:true},
+  {id:'mig_emr_basic', name:'EMR 마이그레이션 기본', p400:50000000, p300:30000000, p200:20000000},
+  {id:'mig_emr_std', name:'EMR 마이그레이션 표준', p400:70000000, p300:40000000, p200:30000000},
+  {id:'mig_emr_adv', name:'EMR 마이그레이션 고급', negotiate:true},
+  {id:'mig_erp_custom', name:'ERP 커스터마이징', negotiate:true},
+  {id:'mig_erp_smart', name:'ERP Smart A/iCUBE 마이그레이션', negotiate:true}
+];
+var EDU_ITEMS = [
+  {id:'edu_emr_edu', name:'EMR 교육비', p400:20000000, p300:10000000, p200:10000000},
+  {id:'edu_emr_setup', name:'EMR 구축비', p400:40000000, p300:20000000, p200:20000000},
+  {id:'edu_erp_edu', name:'ERP 교육비 (회계/인사/물류/UC)', p400:7000000, p300:7000000, p200:7000000},
+  {id:'edu_erp_setup', name:'ERP 구축비 (회계/인사/물류/UC)', p400:9000000, p300:9000000, p200:9000000},
+  {id:'edu_extra', name:'추가 교육비', p400:1000000, p300:1000000, p200:1000000, perUnit:true}
+];
+var ONEAI_PLANS = [
+  {label:'25요금제', credit:'월 55만 크레딧', amount:3000000},
+  {label:'35요금제', credit:'월 77만 크레딧', amount:4200000},
+  {label:'50요금제', credit:'월 110만 크레딧', amount:6000000},
+  {label:'75요금제', credit:'월 165만 크레딧', amount:9000000},
+  {label:'100요금제', credit:'월 220만 크레딧', amount:12000000},
+  {label:'200요금제', credit:'월 440만 크레딧', amount:24000000},
+  {label:'300요금제', credit:'월 660만 크레딧', amount:36000000}
+];
+
+// ==============================
+// UTILS
+// ==============================
+function fmt(n){if(n===0)return '0원';return n.toLocaleString('ko-KR')+'원';}
+function fmtM(n){if(n===0)return '0원';return n.toLocaleString('ko-KR')+'원/월';}
+function isCloud(){return state.type==='cloud200';}
+function getTK(){return state.type==='install400'?'p400':state.type==='install300'?'p300':'p200';}
+function getLabel(){return state.type==='install400'?'설치형 400병상↓':state.type==='install300'?'설치형 300병상↓':'클라우드형 200병상↓';}
+function getShortLabel(){return state.type==='install400'?'400병상↓':state.type==='install300'?'300병상↓':'200병상↓(클라우드)';}
+function gid(id){return document.getElementById(id);}
+function chk(id){var e=gid(id);return e&&e.checked;}
+function qty(id){var e=gid(id);return e?(parseInt(e.value)||0):0;}
+function setTxt(id,v){var e=gid(id);if(e)e.textContent=v;}
+
+// ==============================
+// TYPE SELECTOR
+// ==============================
+function setType(t){
+  state.type=t;
+  ['install400','install300','cloud200'].forEach(function(id){
+    var b=gid('typeBtn-'+id);
+    b.classList.remove('active-install','active-cloud');
+  });
+  var b=gid('typeBtn-'+t);
+  if(t==='cloud200')b.classList.add('active-cloud');
+  else b.classList.add('active-install');
+
+  var lbl=getLabel();
+  var badgeClass=isCloud()?'summary-type-badge badge-cloud':'summary-type-badge badge-install';
+  gid('currentTypeBadge').textContent='● '+lbl;
+  gid('currentTypeBadge').className=badgeClass;
+  gid('summaryTypeBadge').textContent=lbl;
+  gid('summaryTypeBadge').className=badgeClass;
+
+  gid('tab1-install').style.display=isCloud()?'none':'';
+  gid('tab1-cloud').style.display=isCloud()?'':'none';
+
+  var sk=getShortLabel();
+  ['module-type-tag','migration-type-tag','edu-type-tag'].forEach(function(id){setTxt(id,sk);});
+
+  renderModulePrices();
+  renderMigrationPrices();
+  renderEduPrices();
+  renderErpOptions();
+  renderServices();
+  updateSummary();
+}
+
+// ==============================
+// TABS
+// ==============================
+function showTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(function(e){e.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(e){e.classList.remove('active');});
+  gid(id).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+
+// ==============================
+// USER CALCS
+// ==============================
+function calcErpUser(){
+  var q=qty('qty_erp_user'),c=chk('chk_erp_user'),total=0,detail='';
+  if(q>0){
+    if(q<=10){total=q*300000;}
+    else{total=10*300000+(q-10)*250000;detail='10유저 × 300,000('+fmt(3000000)+') + '+(q-10)+'유저 × 250,000('+fmt((q-10)*250000)+') = '+fmt(total);}
+  }
+  setTxt('amt_erp_user',c&&q>0?fmt(total):'0원');
+  var d=gid('detail_erp_user');
+  if(c&&q>10){d.textContent=detail;d.classList.add('show');}else d.classList.remove('show');
+  updateSummary();
+}
+function calcEmrUser(){
+  var q=qty('qty_emr_user'),c=chk('chk_emr_user'),total=0;
+  if(q>0&&q<=500)total=q*150000;
+  setTxt('amt_emr_user',c&&q>0?(q>500?'별도협의':fmt(total)):'0원');
+  var d=gid('detail_emr_user');
+  if(c&&q>500){d.textContent='501유저 이상은 별도협의가 필요합니다.';d.classList.add('show');}else d.classList.remove('show');
+  updateSummary();
+}
+function calcEmpUser(){
+  var q=qty('qty_emp_user'),c=chk('chk_emp_user'),total=0;
+  if(q>0&&q<=500)total=q*100000;
+  setTxt('amt_emp_user',c&&q>0?(q>500?'별도협의':fmt(total)):'0원');
+  var d=gid('detail_emp_user');
+  if(c&&q>500){d.textContent='501유저 이상은 별도협의가 필요합니다.';d.classList.add('show');}else d.classList.remove('show');
+  updateSummary();
+}
+function calcErpCloud(){
+  var q=qty('qty_erp_cloud'),c=chk('chk_erp_cloud'),total=0,detail='';
+  if(q>0){
+    if(q<=10){total=q*50000;}
+    else if(q<=50){total=10*50000+(q-10)*40000;detail='10유저×50,000 + '+(q-10)+'유저×40,000 = '+fmtM(total);}
+    else{total=10*50000+40*40000;detail='51유저 이상은 별도협의';}
+  }
+  setTxt('amt_erp_cloud',c&&q>0?(q>50?'별도협의/월':fmtM(total)):'0원/월');
+  var d=gid('detail_erp_cloud');
+  if(c&&q>10){d.textContent=detail;d.classList.add('show');}else d.classList.remove('show');
+  updateSummary();
+}
+function calcEmrCloud(){
+  var q=qty('qty_emr_cloud'),c=chk('chk_emr_cloud'),total=0,detail='';
+  if(q>0){
+    var s1=Math.min(q,50),s2=Math.min(Math.max(q-50,0),50),s3=Math.min(Math.max(q-100,0),200),s4=Math.max(q-300,0);
+    total=s1*25000+s2*22000+s3*20000+s4*15000;
+    var parts=[];
+    if(s1>0)parts.push(s1+'유저×25,000');if(s2>0)parts.push(s2+'유저×22,000');
+    if(s3>0)parts.push(s3+'유저×20,000');if(s4>0)parts.push(s4+'유저×15,000');
+    detail=parts.join(' + ')+' = '+fmtM(total);
+  }
+  setTxt('amt_emr_cloud',c&&q>0?fmtM(total):'0원/월');
+  var d=gid('detail_emr_cloud');
+  if(c&&q>50){d.textContent=detail;d.classList.add('show');}else d.classList.remove('show');
+  updateSummary();
+}
+function calcEmpCloud(){
+  var q=qty('qty_emp_cloud'),c=chk('chk_emp_cloud'),total=0,detail='';
+  if(q>0){
+    var s1=Math.min(q,50),s2=Math.min(Math.max(q-50,0),50),s3=Math.min(Math.max(q-100,0),200),s4=Math.max(q-300,0);
+    total=s1*13000+s2*12000+s3*11000+s4*10000;
+    var parts=[];
+    if(s1>0)parts.push(s1+'유저×13,000');if(s2>0)parts.push(s2+'유저×12,000');
+    if(s3>0)parts.push(s3+'유저×11,000');if(s4>0)parts.push(s4+'유저×10,000');
+    detail=parts.join(' + ')+' = '+fmtM(total);
+  }
+  setTxt('amt_emp_cloud',c&&q>0?fmtM(total):'0원/월');
+  var d=gid('detail_emp_cloud');
+  if(c&&q>50){d.textContent=detail;d.classList.add('show');}else d.classList.remove('show');
+  updateSummary();
+}
+
+// ==============================
+// ONE AI
+// ==============================
+function renderOneAI(){
+  var g=gid('oneai-group');
+  g.innerHTML=ONEAI_PLANS.map(function(p,i){
+    return '<div class="radio-option" id="oneai_opt_'+i+'" onclick="selectOneAI(this,'+i+','+p.amount+')">'
+      +'<input type="radio" name="oneai" value="'+i+'">'
+      +'<div class="radio-option-name">'+p.label+' <span class="tag tag-gray">'+p.credit+'</span></div>'
+      +'<span class="radio-option-price">'+p.amount.toLocaleString('ko-KR')+'원/년</span>'
+      +'</div>';
+  }).join('');
+}
+function selectOneAI(el,idx,amount){
+  document.querySelectorAll('[id^=oneai_opt_]').forEach(function(r){r.classList.remove('selected');});
+  el.classList.add('selected');
+  el.querySelector('input').checked=true;
+  state.oneai={selected:true,amount:amount,label:ONEAI_PLANS[idx].label};
+  setTxt('oneai_selected_label',state.oneai.label+' — '+fmt(amount));
+  updateSummary();
+}
+function clearOneAI(){
+  document.querySelectorAll('[id^=oneai_opt_]').forEach(function(r){r.classList.remove('selected');});
+  document.querySelectorAll('[name=oneai]').forEach(function(r){r.checked=false;});
+  state.oneai={selected:false,amount:0,label:''};
+  setTxt('oneai_selected_label','미선택');
+  updateSummary();
+}
+
+// ==============================
+// MODULE RENDER
+// ==============================
+function renderModulePrices(){
+  var tk=getTK();
+  gid('erp-modules').innerHTML=MODULE_ERP.map(function(m){
+    return '<div class="item-row">'
+      +'<input type="checkbox" class="item-check" id="chk_'+m.id+'" onchange="checkModuleWarn(\''+m.id+'\');updateSummary()">'
+      +'<div class="item-name">'+m.name+(m.req?'<span class="item-note">필요모듈: '+m.req+'</span>':'')+'</div>'
+      +'<span></span><span></span>'
+      +'<span class="item-amount" id="amt_'+m.id+'">'+fmt(m[tk])+'</span>'
+      +'</div>';
+  }).join('');
+  gid('emr-modules').innerHTML=MODULE_EMR.map(function(m){
+    return '<div class="item-row">'
+      +'<input type="checkbox" class="item-check" id="chk_'+m.id+'" onchange="checkModuleWarn(\''+m.id+'\');updateSummary()">'
+      +'<div class="item-name">'+m.name+(m.essential?' <span class="tag tag-amber">필수팩</span>':'')+'</div>'
+      +'<span></span><span></span>'
+      +'<span class="item-amount" id="amt_'+m.id+'">'+fmt(m[tk])+'</span>'
+      +'</div>';
+  }).join('');
+}
+function checkModuleWarn(id){
+  if(id==='emr_core'){var c=gid('chk_emr_core');gid('emr-pack-warning').style.display=c&&c.checked?'':'none';}
+}
+
+// ==============================
+// ERP OPTIONS RENDER
+// ==============================
+function renderErpOptions(){
+  var cats=[...new Set(ERP_OPTIONS.map(function(o){return o.cat;}))];
+  var html='';
+  cats.forEach(function(cat){
+    var items=ERP_OPTIONS.filter(function(o){
+      if(isCloud()&&o.installOnly)return false;
+      if(!isCloud()&&o.cloudOnly)return false;
+      return true;
+    }).filter(function(o){return o.cat===cat;});
+    if(!items.length)return;
+    html+='<div class="section-title" style="font-size:10px;margin-top:8px">'+cat+'</div>';
+    items.forEach(function(o){
+      var priceStr,extra='';
+      if(o.perUnit)priceStr=fmt(o.amount)+'/본';
+      else if(o.perUser)priceStr=fmt(o.amount)+'/유저';
+      else if(o.perMonth)priceStr=fmt(o.amount)+'/월';
+      else if(o.special==='mail_rep')priceStr='무상(10유저↓)/40,000원 초과';
+      else priceStr=fmt(o.amount);
+      if(o.noDiscount)extra+=' <span class="tag tag-red">할인불가</span>';
+      if(o.installOnly)extra+=' <span class="tag tag-blue">설치형전용</span>';
+      if(o.cloudOnly)extra+=' <span class="tag tag-teal">클라우드전용</span>';
+      html+='<div class="item-row">'
+        +'<input type="checkbox" class="item-check" id="chk_'+o.id+'" onchange="updateSummary()">'
+        +'<div class="item-name">'+o.name+extra+'</div>'
+        +'<span class="item-unit">'+priceStr+'</span>';
+      if(o.perUnit||o.perUser||o.perMonth){
+        html+='<input type="number" class="qty-input" id="qty_'+o.id+'" min="0" value="0" oninput="updateSummary()">';
+      } else { html+='<span></span>'; }
+      html+='<span class="item-amount" id="amt_'+o.id+'">0원</span></div>';
+    });
+  });
+  gid('erp-options-content').innerHTML=html;
+}
+
+// ==============================
+// SERVICES RENDER
+// ==============================
+function renderServices(){
+  var faxG=gid('fax-service-group');
+  faxG.innerHTML=FAX_PLANS.map(function(p){
+    var price=isCloud()?p.c:p.i;
+    var unit=isCloud()?'/월':'/년';
+    return '<div class="radio-option" id="fax_opt_'+p.id+'" onclick="selectService(\'fax\',\''+p.id+'\','+price+')">'
+      +'<input type="radio" name="fax_svc" value="'+p.id+'">'
+      +'<div class="radio-option-name">'+p.name+' <span class="tag tag-gray">수신번호 '+p.recv+'개</span></div>'
+      +'<span class="radio-option-price">'+price.toLocaleString('ko-KR')+'원'+unit+'</span>'
+      +'</div>';
+  }).join('') + '<div style="text-align:right;margin-top:4px"><button class="btn btn-outline" style="font-size:11px" onclick="clearService(\'fax\')">선택 해제</button></div>';
+
+  var laborG=gid('labor-service-group');
+  laborG.innerHTML=LABOR_PLANS.map(function(p){
+    if(p.negotiate)return '<div class="radio-option"><input type="radio" name="labor_svc" value="'+p.id+'" disabled><div class="radio-option-name">'+p.name+'</div><span class="radio-option-price negotiate">별도협의</span></div>';
+    var price=isCloud()?p.c:p.i;
+    var unit=isCloud()?'/월':'/년';
+    return '<div class="radio-option" id="labor_opt_'+p.id+'" onclick="selectService(\'labor\',\''+p.id+'\','+price+')">'
+      +'<input type="radio" name="labor_svc" value="'+p.id+'">'
+      +'<div class="radio-option-name">'+p.name+'</div>'
+      +'<span class="radio-option-price">'+price.toLocaleString('ko-KR')+'원'+unit+'</span>'
+      +'</div>';
+  }).join('') + '<div style="text-align:right;margin-top:4px"><button class="btn btn-outline" style="font-size:11px" onclick="clearService(\'labor\')">선택 해제</button></div>';
+}
+function selectService(type,id,amount){
+  document.querySelectorAll('[id^="'+type+'_opt_"]').forEach(function(r){r.classList.remove('selected');});
+  var el=gid(type+'_opt_'+id);if(el)el.classList.add('selected');
+  var rb=document.querySelector('[name="'+type+'_svc"][value="'+id+'"]');if(rb)rb.checked=true;
+  state.services[type]={id:id,amount:amount};
+  updateSummary();
+}
+function clearService(type){
+  document.querySelectorAll('[id^="'+type+'_opt_"]').forEach(function(r){r.classList.remove('selected');});
+  document.querySelectorAll('[name="'+type+'_svc"]').forEach(function(r){r.checked=false;});
+  state.services[type]=null;
+  updateSummary();
+}
+
+// ==============================
+// MIGRATION / EDU RENDER
+// ==============================
+function renderMigrationPrices(){
+  var tk=getTK();
+  gid('migration-items').innerHTML=MIGRATION_ITEMS.map(function(m){
+    if(m.negotiate)return '<div class="item-row">'
+      +'<input type="checkbox" class="item-check" id="chk_'+m.id+'" onchange="updateSummary()">'
+      +'<div class="item-name">'+m.name+'</div>'
+      +'<span class="tag tag-gray">별도협의</span><span></span>'
+      +'<span class="item-amount negotiate">별도협의</span></div>';
+    return '<div class="item-row">'
+      +'<input type="checkbox" class="item-check" id="chk_'+m.id+'" onchange="updateSummary()">'
+      +'<div class="item-name">'+m.name+'</div><span></span><span></span>'
+      +'<span class="item-amount" id="amt_'+m.id+'">'+fmt(m[tk])+'</span></div>';
+  }).join('');
+}
+function renderEduPrices(){
+  var tk=getTK();
+  gid('edu-items').innerHTML=EDU_ITEMS.map(function(m){
+    return '<div class="item-row">'
+      +'<input type="checkbox" class="item-check" id="chk_'+m.id+'" onchange="updateSummary()">'
+      +'<div class="item-name">'+m.name+'</div>'
+      +'<span class="item-unit">'+fmt(m[tk])+(m.perUnit?'/회':'')+'</span>'
+      +(m.perUnit?'<input type="number" class="qty-input" id="qty_'+m.id+'" min="1" value="1" oninput="updateSummary()">':'<span></span>')
+      +'<span class="item-amount" id="amt_'+m.id+'">0원</span></div>';
+  }).join('');
+}
+function renderEquipment(){
+  gid('equipment-items').innerHTML=EQUIPMENT_ITEMS.map(function(e){
+    if(e.negotiate)return '<div class="item-row">'
+      +'<input type="checkbox" class="item-check" id="chk_'+e.id+'" onchange="updateSummary()">'
+      +'<div class="item-name">'+e.name+'</div>'
+      +'<span class="tag tag-gray">별도협의</span><span></span>'
+      +'<span class="item-amount negotiate">별도협의</span></div>';
+    return '<div class="item-row">'
+      +'<input type="checkbox" class="item-check" id="chk_'+e.id+'" onchange="updateSummary()">'
+      +'<div class="item-name">'+e.name+'<span class="item-note">'+(e.note||'')+'</span></div>'
+      +'<span class="item-unit">'+fmt(e.amount)+(e.perUnit?'/대':'')+'</span>'
+      +(e.perUnit?'<input type="number" class="qty-input" id="qty_'+e.id+'" min="1" value="1" oninput="updateSummary()">':'<span></span>')
+      +'<span class="item-amount" id="amt_'+e.id+'">0원</span></div>';
+  }).join('');
+}
+
+// ==============================
+// MAIN SUMMARY
+// ==============================
+function updateSummary(){
+  var tk=getTK(),negotiate=[],selectedItems=[];
+  var sum_user=0,cloud_user_monthly=0;
+
+  if(!isCloud()){
+    // ERP 유저
+    if(chk('chk_erp_user')){var q=qty('qty_erp_user');if(q>0&&q<=500){var a=q<=10?q*300000:10*300000+(q-10)*250000;sum_user+=a;selectedItems.push('전문가(ERP) 유저 '+q+'명');}
+    else if(q>500)negotiate.push('전문가(ERP) 유저');}
+    // EMR 유저
+    if(chk('chk_emr_user')){var q=qty('qty_emr_user');if(q>0&&q<=500){sum_user+=q*150000;selectedItems.push('사용자(EMR) 유저 '+q+'명');}else if(q>500)negotiate.push('사용자(EMR) 유저(501↑)');}
+    // 임직원
+    if(chk('chk_emp_user')){var q=qty('qty_emp_user');if(q>0&&q<=500){sum_user+=q*100000;selectedItems.push('사용자(임직원) 유저 '+q+'명');}else if(q>500)negotiate.push('사용자(임직원) 유저(501↑)');}
+    // 메일
+    if(chk('chk_mail_user_i')){var q=qty('qty_mail_user_i');var a=q*40000;sum_user+=a;setTxt('amt_mail_user_i',fmt(a));selectedItems.push('메일 유저 '+q+'명');}else setTxt('amt_mail_user_i','0원');
+    // 연말정산
+    if(chk('chk_yr_user_i')){var q=qty('qty_yr_user_i');var a=q*3000;sum_user+=a;setTxt('amt_yr_user_i',fmt(a));selectedItems.push('연말정산 유저 '+q+'명');}else setTxt('amt_yr_user_i','0원');
+    // SSL
+    if(chk('chk_ssl_i')){var q=qty('qty_ssl_i');var a=q*500000;sum_user+=a;setTxt('amt_ssl_i',fmt(a));selectedItems.push('기본 SSL 인증서');}else setTxt('amt_ssl_i','0원');
+  } else {
+    // ERP 클라우드
+    if(chk('chk_erp_cloud')){var q=qty('qty_erp_cloud');if(q>0&&q<=50){var a=q<=10?q*50000:10*50000+(q-10)*40000;cloud_user_monthly+=a;selectedItems.push('전문가(ERP) 유저 '+q+'명');}else if(q>50)negotiate.push('전문가(ERP) 유저(51↑)');}
+    // EMR 클라우드
+    if(chk('chk_emr_cloud')){var q=qty('qty_emr_cloud');if(q>0){var s1=Math.min(q,50),s2=Math.min(Math.max(q-50,0),50),s3=Math.min(Math.max(q-100,0),200),s4=Math.max(q-300,0);var a=s1*25000+s2*22000+s3*20000+s4*15000;cloud_user_monthly+=a;selectedItems.push('사용자(EMR) 유저 '+q+'명');}}
+    // 임직원 클라우드
+    if(chk('chk_emp_cloud')){var q=qty('qty_emp_cloud');if(q>0){var s1=Math.min(q,50),s2=Math.min(Math.max(q-50,0),50),s3=Math.min(Math.max(q-100,0),200),s4=Math.max(q-300,0);var a=s1*13000+s2*12000+s3*11000+s4*10000;cloud_user_monthly+=a;selectedItems.push('사용자(임직원) 유저 '+q+'명');}}
+    // 메일 클라우드
+    if(chk('chk_mail_cloud')){var q=qty('qty_mail_cloud');var a=q*2000;cloud_user_monthly+=a;setTxt('amt_mail_cloud',fmtM(a));selectedItems.push('메일 유저 '+q+'명');}else setTxt('amt_mail_cloud','0원/월');
+    // 연말정산 클라우드
+    if(chk('chk_yr_cloud')){var q=qty('qty_yr_cloud');var a=q*3000;sum_user+=a;setTxt('amt_yr_cloud',fmt(a));selectedItems.push('연말정산 유저 '+q+'명');}else setTxt('amt_yr_cloud','0원/년');
+    // SSL 클라우드
+    if(chk('chk_ssl_c')){var a=500000;sum_user+=a;setTxt('amt_ssl_c',fmt(a));selectedItems.push('기본 SSL 인증서');}else setTxt('amt_ssl_c','0원');
+    sum_user+=cloud_user_monthly;
+  }
+
+  // ONE AI
+  var sum_oneai=state.oneai.selected?state.oneai.amount:0;
+  if(state.oneai.selected)selectedItems.push('ONE AI '+state.oneai.label);
+
+  // 모듈
+  var sum_module=0;
+  MODULE_ERP.concat(MODULE_EMR).forEach(function(m){
+    var c=gid('chk_'+m.id);
+    if(c&&c.checked){sum_module+=m[tk];selectedItems.push(m.name);}
+  });
+
+  // ERP 옵션
+  var sum_option=0;
+  ERP_OPTIONS.forEach(function(o){
+    if(isCloud()&&o.installOnly)return;
+    if(!isCloud()&&o.cloudOnly)return;
+    if(o.special==='mail_rep')return;
+    var c=gid('chk_'+o.id);
+    if(!c||!c.checked)return;
+    var a=0;
+    if(o.perUnit||o.perUser||o.perMonth){
+      var qe=gid('qty_'+o.id);var q2=qe?(parseInt(qe.value)||0):0;a=o.amount*q2;
+    } else a=o.amount;
+    var ae=gid('amt_'+o.id);if(ae)ae.textContent=fmt(a);
+    sum_option+=a;selectedItems.push(o.name);
+  });
+
+  // 서비스
+  var sum_service=0,cloud_service_monthly=0;
+  if(state.services.fax){
+    if(isCloud())cloud_service_monthly+=state.services.fax.amount;
+    else sum_service+=state.services.fax.amount;
+    selectedItems.push('팩스/문자 서비스');
+  }
+  if(state.services.labor){
+    if(isCloud())cloud_service_monthly+=state.services.labor.amount;
+    else sum_service+=state.services.labor.amount;
+    selectedItems.push('노무관리 (휴램프로)');
+  }
+
+  // 장비
+  var sum_equipment=0;
+  EQUIPMENT_ITEMS.forEach(function(e){
+    var c=gid('chk_'+e.id);
+    if(!c||!c.checked)return;
+    if(e.negotiate){negotiate.push(e.name);return;}
+    var qe=gid('qty_'+e.id);var q2=e.perUnit?(qe?(parseInt(qe.value)||1):1):1;
+    var a=e.amount*q2;
+    var ae=gid('amt_'+e.id);if(ae)ae.textContent=fmt(a);
+    sum_equipment+=a;selectedItems.push(e.name);
+  });
+
+  // 마이그레이션
+  var sum_migration=0;
+  MIGRATION_ITEMS.forEach(function(m){
+    var c=gid('chk_'+m.id);
+    if(!c||!c.checked)return;
+    if(m.negotiate){negotiate.push(m.name);return;}
+    sum_migration+=m[tk];selectedItems.push(m.name);
+  });
+
+  // 교육/구축
+  var sum_edu=0;
+  EDU_ITEMS.forEach(function(m){
+    var c=gid('chk_'+m.id);
+    if(!c||!c.checked)return;
+    var q2=m.perUnit?(qty('qty_'+m.id)||1):1;
+    var a=m[tk]*q2;
+    var ae=gid('amt_'+m.id);if(ae)ae.textContent=fmt(a);
+    sum_edu+=a;selectedItems.push(m.name);
+  });
+
+  var supply=sum_user+sum_oneai+sum_module+sum_option+sum_service+sum_equipment+sum_migration+sum_edu;
+  var vat=Math.round(supply*0.1);
+  var total=supply+vat;
+
+  setTxt('sum_user',fmt(sum_user));setTxt('sum_oneai',fmt(sum_oneai));setTxt('sum_module',fmt(sum_module));
+  setTxt('sum_option',fmt(sum_option));setTxt('sum_service',fmt(sum_service));setTxt('sum_equipment',fmt(sum_equipment));
+  setTxt('sum_migration',fmt(sum_migration));setTxt('sum_edu',fmt(sum_edu));
+  setTxt('sum_supply',fmt(supply));setTxt('sum_vat',fmt(vat));setTxt('sum_total',fmt(total));
+
+  var cp=gid('cloud-monthly-panel');
+  if(isCloud()&&(cloud_user_monthly>0||cloud_service_monthly>0)){
+    cp.style.display='';
+    var tm=cloud_user_monthly+cloud_service_monthly;
+    setTxt('cloud_user_monthly',fmtM(cloud_user_monthly));
+    setTxt('cloud_service_monthly',fmtM(cloud_service_monthly));
+    setTxt('cloud_total_monthly',fmtM(tm));
+    setTxt('cloud_annual_equiv',fmt(tm*12));
+  } else cp.style.display='none';
+
+  var nn=gid('negotiate-note');
+  if(negotiate.length>0){nn.style.display='';nn.textContent='* 별도협의 항목 '+negotiate.length+'건: '+negotiate.join(', ');}
+  else nn.style.display='none';
+
+  setTxt('selected-count',selectedItems.length+'개');
+  var sl=gid('selected-items-list');
+  sl.innerHTML=selectedItems.length===0?'선택된 항목이 없습니다.':selectedItems.map(function(i){return '<div style="padding:2px 0;border-bottom:1px solid #f1f5f9">• '+i+'</div>';}).join('');
+
+  autoSave();
+}
+
+// ==============================
+// SAVE / LOAD / RESET
+// ==============================
+function autoSave(){try{localStorage.setItem('amaranth_h_q',JSON.stringify(gatherState()));}catch(e){}}
+function gatherState(){
+  var hdr={};
+  ['hdr_customer','hdr_contact','hdr_quoteno','hdr_date','hdr_supplier','hdr_center','hdr_sales','hdr_quoter'].forEach(function(f){var e=gid(f);if(e)hdr[f]=e.value;});
+  return {type:state.type,oneai:state.oneai,services:state.services,header:hdr};
+}
+function saveData(){try{localStorage.setItem('amaranth_h_q',JSON.stringify(gatherState()));alert('저장되었습니다.');}catch(e){alert('저장 실패');}}
+function loadSaved(){
+  try{
+    var d=localStorage.getItem('amaranth_h_q');
+    if(!d){alert('저장된 데이터가 없습니다.');return;}
+    var s=JSON.parse(d);
+    if(s.header)Object.keys(s.header).forEach(function(k){var e=gid(k);if(e)e.value=s.header[k];});
+    if(s.type)setType(s.type);
+    alert('불러왔습니다.');updateSummary();
+  }catch(e){alert('불러오기 실패');}
+}
+function resetAll(){if(!confirm('모든 입력을 초기화하시겠습니까?'))return;location.reload();}
+
+// ==============================
+// EXPORT
+// ==============================
+function exportHTML(){
+  var cust=gid('hdr_customer').value||'견적서';
+  var date=gid('hdr_date').value||new Date().toISOString().split('T')[0];
+  var html='<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>견적서 - '+cust+'</title>'
+    +'<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">'
+    +'<style>body{font-family:\'Noto Sans KR\',sans-serif;max-width:820px;margin:40px auto;padding:20px;color:#1e293b}'
+    +'h1{font-size:22px;font-weight:700;border-bottom:2px solid #1a3a5c;padding-bottom:10px;margin-bottom:20px;color:#1a3a5c}'
+    +'.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;margin-bottom:20px}'
+    +'.mr{display:flex;gap:8px}.ml{color:#64748b;min-width:80px}.mv{font-weight:500}'
+    +'.tb{display:inline-block;padding:4px 12px;border-radius:12px;background:#eff6ff;color:#1d4ed8;font-weight:600;font-size:12px;margin-bottom:16px}'
+    +'table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px}'
+    +'th{background:#1a3a5c;color:#fff;padding:8px 12px;text-align:left}'
+    +'td{padding:8px 12px;border-bottom:1px solid #e2e8f0}'
+    +'.tr{background:#f0f2f5;font-weight:700}.gt{background:#1a3a5c;color:#fff}'
+    +'</style></head><body>'
+    +'<h1>Amaranth H 견적서</h1>'
+    +'<div class="meta">'
+    +'<div class="mr"><span class="ml">고객사명</span><span class="mv">'+gid('hdr_customer').value+'</span></div>'
+    +'<div class="mr"><span class="ml">견적일자</span><span class="mv">'+date+'</span></div>'
+    +'<div class="mr"><span class="ml">견적번호</span><span class="mv">'+gid('hdr_quoteno').value+'</span></div>'
+    +'<div class="mr"><span class="ml">영업담당자</span><span class="mv">'+gid('hdr_sales').value+'</span></div>'
+    +'<div class="mr"><span class="ml">공급사명</span><span class="mv">'+gid('hdr_supplier').value+'</span></div>'
+    +'<div class="mr"><span class="ml">영업센터</span><span class="mv">'+gid('hdr_center').value+'</span></div>'
+    +'</div>'
+    +'<div class="tb">도입 유형: '+getLabel()+'</div>'
+    +'<h3 style="font-size:14px;margin:12px 0 8px">선택 항목</h3>'
+    +'<div style="font-size:12px;color:#475569;margin-bottom:16px">'+gid('selected-items-list').innerHTML+'</div>'
+    +'<table><tr><th>구분</th><th style="text-align:right">금액</th></tr>'
+    +'<tr><td>① 유저 사용료</td><td style="text-align:right">'+gid('sum_user').textContent+'</td></tr>'
+    +'<tr><td>② ONE AI</td><td style="text-align:right">'+gid('sum_oneai').textContent+'</td></tr>'
+    +'<tr><td>③ 모듈 라이선스</td><td style="text-align:right">'+gid('sum_module').textContent+'</td></tr>'
+    +'<tr><td>④ ERP 옵션</td><td style="text-align:right">'+gid('sum_option').textContent+'</td></tr>'
+    +'<tr><td>⑤ 서비스</td><td style="text-align:right">'+gid('sum_service').textContent+'</td></tr>'
+    +'<tr><td>⑥ 장비연동</td><td style="text-align:right">'+gid('sum_equipment').textContent+'</td></tr>'
+    +'<tr><td>⑦ 마이그레이션</td><td style="text-align:right">'+gid('sum_migration').textContent+'</td></tr>'
+    +'<tr><td>⑧ 교육/구축비</td><td style="text-align:right">'+gid('sum_edu').textContent+'</td></tr>'
+    +'<tr class="tr"><td>공급가액 (VAT 별도)</td><td style="text-align:right">'+gid('sum_supply').textContent+'</td></tr>'
+    +'<tr class="tr"><td>VAT (10%)</td><td style="text-align:right">'+gid('sum_vat').textContent+'</td></tr>'
+    +'<tr class="gt"><td>합계 (VAT 포함)</td><td style="text-align:right">'+gid('sum_total').textContent+'</td></tr>'
+    +'</table>'
+    +'<p style="font-size:11px;color:#94a3b8">※ 모든 금액은 VAT 별도입니다. · Amaranth H 표준가격표 기준 (2026.05.11)</p>'
+    +'</body></html>';
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='견적서_'+cust+'_'+date+'.html';
+  a.click();
+}
+
+// ==============================
+// INIT
+// ==============================
+(function init(){
+  var today=new Date().toISOString().split('T')[0];
+  gid('hdr_date').value=today;
+  gid('hdr_quoteno').value='Q'+today.replace(/-/g,'')+'-'+String(Math.floor(Math.random()*900+100));
+  renderOneAI();
+  renderModulePrices();
+  renderErpOptions();
+  renderServices();
+  renderMigrationPrices();
+  renderEduPrices();
+  renderEquipment();
+  updateSummary();
+})();
+</script>
+</body>
+</html>
